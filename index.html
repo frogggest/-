@@ -153,7 +153,7 @@ button.small{padding:3px 8px;font-size:11px}
 <div id="shop"></div>
 <h3>Корзина</h3>
 <div id="cart"></div>
-<div class="hint">Заточка оружия до +3: 1-я = 2×цена, 2-я = 3×цена, 3-я = 4×цена (каждая даёт +1 урона). Фальшион точится дешевле: 1×, 2×, 3×. Укрепление брони/щита до +2: 1-е = 2×цена, 2-е = 3×цена (+1 защиты).</div>
+<div class="hint">Заточка оружия до +3: 1-я = 2×цена, 2-я = 3×цена, 3-я = 4×цена. Фальшион точится дешевле: 1×, 2×, 3×. Кулаки не точатся. Укрепление брони/щита до +2: 1-е = 2×цена, 2-е = 3×цена.</div>
 </section>
 <section>
 <h2>Итоговые характеристики</h2>
@@ -341,7 +341,7 @@ melee:{name:'Оружие ближнего боя',items:[
 {id:'cleaver',name:'Тесак',price:5,dmg:3},{id:'handaxe',name:'Топорик',price:11,dmg:4},
 {id:'greataxe',name:'Секира',price:30,dmg:7},{id:'labrys',name:'Лабрис',price:35,dmg:8},
 {id:'silveraxe',name:'Серебряный топор',price:25,dmg:4},{id:'quarterstaff',name:'Дорожный посох',price:9,dmg:3},
-{id:'steelstaff',name:'Стальной посох',price:15,dmg:4},{id:'fists',name:'Кулаки',price:0,dmg:1},
+{id:'steelstaff',name:'Стальной посох',price:15,dmg:4},{id:'fists',name:'Кулаки',price:0,dmg:1,noSharp:true},
 {id:'gloves',name:'Тяжелые перчатки',price:10,dmg:2},{id:'cestus',name:'Кастеты',price:20,dmg:3},
 {id:'spikedcestus',name:'Шипованные кастеты',price:35,dmg:5},{id:'trident',name:'Трезубец',price:20,dmg:5},
 {id:'spear',name:'Копьё',price:15,dmg:5},{id:'glaive',name:'Глефа',price:30,dmg:6},
@@ -418,6 +418,7 @@ function getSpentOnPotions(){let t=0;for(const k in state.potions)t+=(state.poti
 function isWeaponItem(cat){return cat==='melee'||cat==='ranged';}
 function isArmorItem(cat){return cat==='armor'||cat==='shields';}
 function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
+function canBeSharpened(c){const it=findItem(c.cat,c.id);return it&&!it.noSharp;}
 function sharpCost(price,level,cheap){
   if(cheap) return level*price;
   return (level+1)*price;
@@ -664,6 +665,7 @@ function removeFromCart(i){state.cart.splice(i,1);render();save();}
 function sharpenItem(i){
 const c=state.cart[i];if(!c)return;
 if(!isWeaponItem(c.cat))return;
+if(!canBeSharpened(c)){alert('Это оружие нельзя заточить.');return;}
 if(c.sharp>=3){alert('Максимум +3.');return;}
 const it=findItem(c.cat,c.id);
 const cost=sharpCost(c.price,c.sharp+1,it&&it.cheapSharp);
@@ -687,11 +689,12 @@ cart.innerHTML='';
 state.cart.forEach((c,i)=>{
   const it=findItem(c.cat,c.id);
   const cheap=it&&it.cheapSharp;
+  const sharpenable=canBeSharpened(c);
   let extra='';
   if(isWeaponItem(c.cat)&&c.sharp>0)extra+=` <span class="upg-tag">+${c.sharp} заточка</span>`;
   if(isArmorItem(c.cat)&&c.reinf>0)extra+=` <span class="upg-tag">+${c.reinf} укрепление</span>`;
   let upgRow='';
-  if(isWeaponItem(c.cat)){
+  if(isWeaponItem(c.cat)&&sharpenable){
     const nextCost=sharpCost(c.price,c.sharp+1,cheap);
     upgRow+=`<button onclick="sharpenItem(${i})" ${c.sharp>=3?'disabled':''}>Заточить (+${nextCost})</button>`;
     if(c.sharp>0)upgRow+=`<button onclick="reduceSharpen(${i})">−</button>`;
