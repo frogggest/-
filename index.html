@@ -107,7 +107,7 @@ button.small{padding:3px 8px;font-size:11px}
 <section>
 <h2>Атрибуты <span id="attr-counter" class="counter"></span></h2>
 <div class="attr-grid" id="attr-grid"></div>
-<div class="hint">Старт 1. Максимум указан рядом с названием. Одно очко = один уровень.</div>
+<div class="hint">Старт 1. Максимум указан рядом с названием.</div>
 </section>
 <section id="domains-section" class="hidden">
 <h2>Домейны бога</h2>
@@ -150,22 +150,17 @@ button.small{padding:3px 8px;font-size:11px}
 <h3>Магия</h3><div class="calc-block" id="magic-attacks-list"></div>
 <h3>Общее</h3><div class="stats-grid" id="stats"></div>
 </section>
-
-<!-- СЕКЦИЯ ОПЫТА -->
 <section id="xp-section" class="hidden">
 <h2>Развитие персонажа</h2>
 <div class="xp-counter" id="xp-counter"></div>
-
 <h3>Сессии</h3>
 <div class="row" style="margin-bottom:8px">
 <label>Опыт за сессию <input type="number" id="xp-session" min="3" value="3"></label>
 <button onclick="addSessionXP()">+ Добавить сессию</button>
 </div>
 <div class="xp-log" id="xp-log"></div>
-
 <h3>Повышение навыков</h3>
 <div id="xp-skills"></div>
-
 <h3>Новые заклинания (5 опыта)</h3>
 <div class="row">
 <label>Школа <select id="xp-spell-school" onchange="updateSpellList()"></select></label>
@@ -174,7 +169,6 @@ button.small{padding:3px 8px;font-size:11px}
 </div>
 <div class="xp-purchased" id="xp-purchased"></div>
 </section>
-
 </div>
 <script>
 const ATTRS={SIL:'СИЛ',TEL:'ТЕЛ',LVK:'ЛВК',INT:'ИНТ',MDR:'МДР',HAR:'ХАР'};
@@ -197,30 +191,18 @@ orphan:{name:'Сирота',maxes:{SIL:6,TEL:6,LVK:7,INT:6,MDR:6,HAR:5}},
 darkborn:{name:'Отродье мрака',maxes:{SIL:5,TEL:6,LVK:6,INT:7,MDR:7,HAR:6}}}}
 };
 const SKILLS={
-blades:{name:'Клинки',cat:'weapon',attr:['SIL','LVK']},
-blunt:{name:'Дробящее',cat:'weapon',attr:'SIL'},
-axes:{name:'Топоры',cat:'weapon',attr:'SIL'},
-unarmed:{name:'Безоружный бой',cat:'weapon',attr:['SIL','LVK']},
-staves:{name:'Посохи',cat:'weapon',attr:'LVK'},
-thrown:{name:'Метательное',cat:'weapon',attr:'LVK'},
-polearms:{name:'Древковое',cat:'weapon',attr:'LVK'},
-bows:{name:'Луки',cat:'weapon',attr:'LVK'},
-crossbows:{name:'Арбалеты',cat:'weapon',attr:'LVK'},
-dualwield:{name:'Парное оружие',cat:'weapon',attr:'LVK'},
-evocation:{name:'Воплощение',cat:'magic',attr:'INT'},
-necromancy:{name:'Некромантия',cat:'magic',attr:'MDR'},
-transmutation:{name:'Трансмутация',cat:'magic',attr:'INT'},
-illusion:{name:'Иллюзия',cat:'magic',attr:'INT'},
-enchantment:{name:'Очарование',cat:'magic',attr:'HAR'},
-divination:{name:'Прорицание',cat:'magic',attr:'MDR'},
-abjuration:{name:'Ограждение',cat:'magic',attr:'MDR'},
-conjuration:{name:'Созидание',cat:'magic',attr:'MDR'},
-defense:{name:'Защита',cat:'util',attr:null},
-persuasion:{name:'Убеждение',cat:'util',attr:'HAR'},
-survival:{name:'Выживание',cat:'util',attr:'MDR'},
-perception:{name:'Внимательность',cat:'util',attr:'MDR'},
-lore:{name:'Начитанность',cat:'util',attr:'INT'},
-stealth:{name:'Скрытность',cat:'util',attr:'LVK'},
+blades:{name:'Клинки',cat:'weapon',attr:['SIL','LVK']},blunt:{name:'Дробящее',cat:'weapon',attr:'SIL'},
+axes:{name:'Топоры',cat:'weapon',attr:'SIL'},unarmed:{name:'Безоружный бой',cat:'weapon',attr:['SIL','LVK']},
+staves:{name:'Посохи',cat:'weapon',attr:'LVK'},thrown:{name:'Метательное',cat:'weapon',attr:'LVK'},
+polearms:{name:'Древковое',cat:'weapon',attr:'LVK'},bows:{name:'Луки',cat:'weapon',attr:'LVK'},
+crossbows:{name:'Арбалеты',cat:'weapon',attr:'LVK'},dualwield:{name:'Парное оружие',cat:'weapon',attr:'LVK'},
+evocation:{name:'Воплощение',cat:'magic',attr:'INT'},necromancy:{name:'Некромантия',cat:'magic',attr:'MDR'},
+transmutation:{name:'Трансмутация',cat:'magic',attr:'INT'},illusion:{name:'Иллюзия',cat:'magic',attr:'INT'},
+enchantment:{name:'Очарование',cat:'magic',attr:'HAR'},divination:{name:'Прорицание',cat:'magic',attr:'MDR'},
+abjuration:{name:'Ограждение',cat:'magic',attr:'MDR'},conjuration:{name:'Созидание',cat:'magic',attr:'MDR'},
+defense:{name:'Защита',cat:'util',attr:null},persuasion:{name:'Убеждение',cat:'util',attr:'HAR'},
+survival:{name:'Выживание',cat:'util',attr:'MDR'},perception:{name:'Внимательность',cat:'util',attr:'MDR'},
+lore:{name:'Начитанность',cat:'util',attr:'INT'},stealth:{name:'Скрытность',cat:'util',attr:'LVK'},
 qi:{name:'Ци',cat:'special',attr:'MDR'}
 };
 function getAttrValue(a){if(!a)return 0;if(Array.isArray(a))return Math.max(...a.map(x=>state.attrs[x]||1));return state.attrs[a]||1;}
@@ -376,24 +358,19 @@ gear:{name:'Снаряжение и расходники',items:[
 {id:'alchemy',name:'Алхимический набор (1 элемент)',price:20,note:'Только алхимику',only:['alchemist']},
 {id:'buffscroll',name:'Свиток усиления',price:30,note:'Усиливает заклинание'}]}
 };
-
 let state={name:'',gender:'',race:'human',subrace:'',class:'fighter',god:'',priority:'A',
 attrs:{SIL:1,TEL:1,LVK:1,INT:1,MDR:1,HAR:1},skills:{},spells:{},cart:[],gear:'',
 magusSchools:[],domainChoices:{},rangerChoice:'',rangerType:'',beast:'',
 druidOrder:'',wildForm:'',elementalForm:'',potions:{},alchemyFire:0,
 xpEarned:0,xpSpent:0,sessionLog:[],purchasedSpells:[],xpOpen:false};
-
 function xpAvail(){return state.xpEarned-state.xpSpent;}
 function canUseMagic(){if(state.class==='cleric'||state.class==='paladin')return true;return state.priority==='B';}
-
 function initSelects(){
 const rs=document.getElementById('race');for(const k in RACES)rs.innerHTML+=`<option value="${k}">${RACES[k].name}</option>`;
 const cs=document.getElementById('class');for(const k in CLASSES)cs.innerHTML+=`<option value="${k}">${CLASSES[k].name}</option>`;
 const gs=document.getElementById('god');gs.innerHTML='<option value="">— выбери бога —</option>';
 for(const k in GODS)gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;}
-
 function getMaxes(){const r=RACES[state.race];if(r.subraces&&state.subrace)return r.subraces[state.subrace].maxes;return r.maxes||{};}
-
 function getAvailableSkills(){
 const c=CLASSES[state.class];let list=[...(c.fixed||[])];
 Object.keys(SKILLS).forEach(k=>{if(SKILLS[k].cat==='util'&&!list.includes(k))list.push(k);});
@@ -402,12 +379,14 @@ if(state.class==='cleric'&&state.god){const god=GODS[state.god];
 god.domains.forEach(d=>{const ds=DOMAIN_SKILLS[d];if(!ds)return;
 if(Array.isArray(ds)){ds.forEach(s=>{if(!list.includes(s))list.push(s);});}
 else{const chosen=state.domainChoices[d]||[];chosen.forEach(s=>{if(!list.includes(s))list.push(s);});}});}
-if(!canUseMagic()){list=list.filter(k=>SKILLS[k]&&SKILLS[k].cat!=='magic'&&k!=='qi');}
+if(state.purchasedSpells){state.purchasedSpells.forEach(p=>{if(!list.includes(p.school))list.push(p.school);});}
+if(!canUseMagic()){list=list.filter(k=>{if(!SKILLS[k])return true;
+if(state.purchasedSpells&&state.purchasedSpells.some(p=>p.school===k))return true;
+if(SKILLS[k].cat==='magic')return false;if(k==='qi')return false;return true;});}
 return list;}
-
 function getMagicPool(){return 2+Math.ceil((state.attrs.INT||1)/2);}
 function getSpellCost(){return state.class==='wizard'?1:2;}
-function getSpentOnSpells(){return Object.values(state.spells).filter(x=>x).length*getSpellCost();}
+function getSpentOnSpells(){const cost=getSpellCost();const count=Object.keys(state.spells).filter(k=>state.spells[k]&&!k.startsWith('purchased_')).length;return count*cost;}
 function getSpentOnBeast(){let t=0;if(state.beast&&BEASTS[state.beast])t+=BEASTS[state.beast].cost;
 if(state.wildForm&&BEASTS[state.wildForm])t+=BEASTS[state.wildForm].cost;
 if(state.elementalForm&&ELEMENTAL_FORMS[state.elementalForm])t+=ELEMENTAL_FORMS[state.elementalForm].cost;return t;}
@@ -417,15 +396,13 @@ function validateMagicSelection(){
 if(state.beast&&getSpentOnSpells()+getSpentOnBeast()>getMagicPool())state.beast='';
 if(state.wildForm&&getSpentOnSpells()+getSpentOnBeast()>getMagicPool())state.wildForm='';
 if(state.elementalForm&&getSpentOnSpells()+getSpentOnBeast()>getMagicPool())state.elementalForm='';
-let keys=Object.keys(state.spells).filter(k=>state.spells[k]);
+let keys=Object.keys(state.spells).filter(k=>state.spells[k]&&!k.startsWith('purchased_'));
 while(getTotalSpent()>getMagicPool()&&keys.length){delete state.spells[keys.pop()];}}
-function validateMagicAccess(){if(!canUseMagic()){state.spells={};state.beast='';state.wildForm='';state.elementalForm='';delete state.skills.qi;state.magusSchools=[];}}
+function validateMagicAccess(){if(!canUseMagic()&&(!state.purchasedSpells||!state.purchasedSpells.length)){state.spells={};state.beast='';state.wildForm='';state.elementalForm='';delete state.skills.qi;state.magusSchools=[];}}
 function getAlchemySetCount(){let n=0;state.cart.forEach(c=>{if(c.id==='alchemy')n++;});return n;}
 function getAlchemyPool(){return Math.ceil((state.attrs.INT||1)/2)+getAlchemySetCount();}
 function getSpentOnPotions(){let t=0;for(const k in state.potions)t+=(state.potions[k]||0);return t;}
-
 function render(){renderAttrs();renderDomains();renderSpecial();renderSkills();renderAlchemy();renderSpells();renderBeasts();renderShop();renderCart();renderStats();renderRaceAbility();renderClassInfo();renderMoney();if(state.xpOpen)renderXP();}
-
 function renderAttrs(){
 const maxes=getMaxes();const grid=document.getElementById('attr-grid');grid.innerHTML='';
 for(const k in ATTRS){const max=maxes[k]||6;const v=state.attrs[k]||1;
@@ -433,9 +410,7 @@ grid.innerHTML+=`<div class="attr-item"><label>${ATTRS[k]}<span class="max">ма
 const pool=PRIORITIES[state.priority].attr;let used=0;for(const k in state.attrs)used+=(state.attrs[k]-1);
 const c=document.getElementById('attr-counter');c.textContent=`${used} / ${pool}`;
 c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
-
 function setAttr(k,v,max){v=Math.max(1,Math.min(max,parseInt(v)||1));state.attrs[k]=v;validateMagicSelection();render();}
-
 function renderDomains(){
 const sec=document.getElementById('domains-section');
 if(state.class!=='cleric'||!state.god){sec.classList.add('hidden');return;}
@@ -454,12 +429,10 @@ pool.forEach(sid=>{const checked=chosen.includes(sid);
 html+=`<label class="radio-item"><input type="checkbox" ${checked?'checked':''} onchange="toggleDomainChoice('${d}','${sid}',${ds.count})"> ${SKILLS[sid].name}</label>`;});
 html+=`</div>`;});
 div.innerHTML=html;}
-
 function toggleDomainChoice(domain,skill,max){
 if(!state.domainChoices[domain])state.domainChoices[domain]=[];
 const arr=state.domainChoices[domain];const i=arr.indexOf(skill);
 if(i>=0)arr.splice(i,1);else if(arr.length<max)arr.push(skill);else return;render();}
-
 function renderSpecial(){
 const sec=document.getElementById('special-section');const cls=CLASSES[state.class];
 const has=cls.hasMagusSchools||cls.hasRangerChoice||cls.hasDruidOrder;
@@ -493,7 +466,6 @@ for(const k in ELEMENTAL_FORMS){const e=ELEMENTAL_FORMS[k];const checked=state.e
 html+=`<label class="radio-item"><input type="radio" name="eleform" ${checked?'checked':''} onchange="setElementalForm('${k}')"> <b>${e.name}</b> (${e.cost}) — ${e.hp}</label>`;}
 html+=`</div>`;}}
 document.getElementById('special-content').innerHTML=html;}
-
 function toggleMagusSchool(s){if(!state.magusSchools)state.magusSchools=[];
 const i=state.magusSchools.indexOf(s);if(i>=0)state.magusSchools.splice(i,1);
 else if(state.magusSchools.length<2)state.magusSchools.push(s);render();}
@@ -505,11 +477,9 @@ if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}st
 function setElementalForm(k){if(!k){state.elementalForm='';render();return;}const e=ELEMENTAL_FORMS[k];if(!e)return;
 const current=state.elementalForm?ELEMENTAL_FORMS[state.elementalForm].cost:0;const diff=e.cost-current;
 if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}state.elementalForm=k;render();}
-
 function getMagusWeaponMax(){let max=0;for(const id in state.skills){const sk=SKILLS[id];if(!sk||sk.cat!=='weapon')continue;if(state.skills[id]>max)max=state.skills[id];}return max;}
 function getMagusMagicMax(){let max=0;for(const id in state.skills){const sk=SKILLS[id];if(!sk||sk.cat!=='magic')continue;if(state.skills[id]>max)max=state.skills[id];}return max;}
 function magusBalanceOK(){if(state.class!=='magus')return true;return Math.abs(getMagusWeaponMax()-getMagusMagicMax())<=1;}
-
 function renderSkills(){
 const avail=getAvailableSkills();const list=document.getElementById('skill-list');list.innerHTML='';
 if(state.class==='magus'){
@@ -535,7 +505,6 @@ list.innerHTML+='</div>';}
 let used=0;for(const k in state.skills)used+=skillCost(state.skills[k]);
 const pool=PRIORITIES[state.priority].skills;const c=document.getElementById('skill-counter');
 c.textContent=`${used} / ${pool}`;c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
-
 function setSkill(id,v){
 v=Math.max(0,parseInt(v)||0);
 const prev=state.skills[id]||0;
@@ -546,7 +515,6 @@ if(state.class==='magus'&&!magusBalanceOK()){
   render();return;
 }
 render();}
-
 function renderAlchemy(){
 const sec=document.getElementById('alchemy-section');
 if(!CLASSES[state.class].hasAlchemy){sec.classList.add('hidden');return;}sec.classList.remove('hidden');
@@ -562,16 +530,12 @@ fireBlock.innerHTML=`<div class="skill-item"><span class="skill-name">Алхим
 const list=document.getElementById('alchemy-list');list.innerHTML='';
 POTIONS.forEach(p=>{const v=state.potions[p.id]||0;
 list.innerHTML+=`<div class="skill-item"><span class="skill-name">${p.name} <span class="skill-attr">(${p.effect})</span></span><input type="number" min="0" value="${v}" onchange="setPotion('${p.id}',this.value)"><span class="skill-total">${v>0?v+' шт.':''}</span></div>`;});}
-
 function setPotion(id,v){v=Math.max(0,parseInt(v)||0);if(v===0)delete state.potions[id];else state.potions[id]=v;render();}
 function setAlchemyFire(v){v=Math.max(0,Math.min(4,parseInt(v)||0));state.alchemyFire=v;render();}
-
 function renderSpells(){
 const avail=getAvailableSkills();const magicAvail=avail.filter(s=>SKILLS[s]&&SKILLS[s].cat==='magic');
 const counter=document.getElementById('spell-counter');const banner=document.getElementById('pool-banner');
 const list=document.getElementById('spell-list');
-if(!canUseMagic()&&state.class!=='cleric'&&state.class!=='paladin'){
-  counter.textContent='';banner.innerHTML=`<span style="color:#e05a5a">Магия доступна только приоритету B (кроме жреца и паладина).</span>`;list.innerHTML='';return;}
 if(!magicAvail.length){counter.textContent='';banner.textContent='Класс не имеет доступа к магии.';list.innerHTML='';return;}
 const pool=getMagicPool();const spellCost=getSpellCost();const spentSpells=getSpentOnSpells();
 const spentBeast=getSpentOnBeast();const total=spentSpells+spentBeast;
@@ -581,14 +545,25 @@ let parts=[];if(spentSpells>0)parts.push(`заклинания: ${spentSpells}`)
 if(spentBeast>0)parts.push(`зверь/форма: ${spentBeast}`);
 let bhtml=`Пул: <b>${pool}</b> (2 + 1/2 ИНТ). Израсходовано: <b>${total}</b>`;
 if(parts.length)bhtml+=` (${parts.join(', ')})`;
+if(state.purchasedSpells&&state.purchasedSpells.length)bhtml+=` | Куплено за опыт: ${state.purchasedSpells.length}`;
 if(total>pool)bhtml+=` <span style="color:#e05a5a">— перерасход!</span>`;banner.innerHTML=bhtml;
 list.innerHTML='';
-magicAvail.forEach(sid=>{const sp=SPELLS[sid];if(!sp)return;
-list.innerHTML+=`<div class="spell-group"><h3>${sp.name} <span class="skill-attr">(${spellCost} очк${spellCost===1?'о':'а'} за заклинание)</span></h3><div class="spell-list">`;
-sp.list.forEach((s,i)=>{const id=`${sid}_${i}`;const checked=state.spells[id]?'checked':'';
-list.innerHTML+=`<label class="spell-item"><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span>${s}</span></label>`;});
-list.innerHTML+='</div></div>';});}
-
+magicAvail.forEach(sid=>{
+  const sp=SPELLS[sid];if(!sp)return;
+  list.innerHTML+=`<div class="spell-group"><h3>${sp.name} <span class="skill-attr">(${spellCost} очк${spellCost===1?'о':'а'} за заклинание)</span></h3><div class="spell-list">`;
+  sp.list.forEach((s,i)=>{
+    const id=`${sid}_${i}`;
+    const checked=state.spells[id]?'checked':'';
+    list.innerHTML+=`<label class="spell-item"><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span>${s}</span></label>`;
+  });
+  (state.purchasedSpells||[]).forEach((p,pi)=>{
+    if(p.school!==sid)return;
+    const id=`purchased_${pi}`;
+    const checked=state.spells[id]?'checked':'';
+    list.innerHTML+=`<label class="spell-item"><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span style="color:#5ae05a">${p.text} <i style="font-size:10px;opacity:0.7">(куплено)</i></span></label>`;
+  });
+  list.innerHTML+='</div></div>';
+});}
 function renderBeasts(){
 const section=document.getElementById('beasts-section');const counter=document.getElementById('beast-counter');
 const block=document.getElementById('beast-block');
@@ -605,15 +580,12 @@ html+=`</div>`;
 if(state.beast){const b=BEASTS[state.beast];
 html+=`<div class="ability"><b>${b.name}:</b> ${b.hp}. ${b.skill}. ${b.special}</div>`;}
 block.innerHTML=html;}
-
 function toggleSpell(id){const willLearn=!state.spells[id];
-if(willLearn){const cost=getSpellCost();if(!canAfford(cost)){alert('Не хватает очков.');return;}state.spells[id]=true;}
+if(willLearn){if(!id.startsWith('purchased_')){const cost=getSpellCost();if(!canAfford(cost)){alert('Не хватает очков.');return;}}state.spells[id]=true;}
 else delete state.spells[id];render();}
-
 function setBeast(k){if(!k){state.beast='';render();return;}const b=BEASTS[k];if(!b)return;
 const currentBeastCost=state.beast?BEASTS[state.beast].cost:0;const diff=b.cost-currentBeastCost;
 if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}state.beast=k;render();}
-
 function renderShop(){
 const shop=document.getElementById('shop');shop.innerHTML='';
 for(const catKey in EQUIPMENT){const cat=EQUIPMENT[catKey];const isWeapon=catKey==='melee'||catKey==='ranged';
@@ -622,39 +594,32 @@ cat.items.forEach(it=>{const blocked=isBlocked(it,catKey);const price=it.price;
 const noteHtml=(!isWeapon&&it.note)?` <span class="restricted">(${it.note})</span>`:'';
 html+=`<div class="shop-item"><span>${it.name}${it.dmg!==undefined?` — урон ${it.dmg}`:''}${it.def!==undefined?` — защита ${it.def}`:''}${noteHtml}</span><span class="price">${price}м</span><span>${blocked?'<span class="restricted">недоступно</span>':`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`}</span></div>`;});
 html+=`</details>`;shop.innerHTML+=html;}}
-
 function isBlocked(item,catKey){
 if(item.only&&!item.only.includes(state.class))return true;
 if(item.restricted&&item.restricted.includes(state.class))return true;
 if(state.class==='cleric'&&(catKey==='melee'||catKey==='ranged')){
 if(!state.god)return true;const allowed=GOD_WEAPONS_MAP[state.god]||[];
 if(!allowed.includes(item.id))return true;}return false;}
-
 function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
 const pool=PRIORITIES[state.priority].money;const spent=state.cart.reduce((s,c)=>s+c.price,0);
 if(spent+item.price>pool){alert('Не хватает золота.');return;}
 state.cart.push({cat,id,name:item.name,price:item.price});render();}
 function removeFromCart(i){state.cart.splice(i,1);render();}
-
 function renderCart(){const cart=document.getElementById('cart');
 if(!state.cart.length){cart.innerHTML='<p class="hint">Пусто.</p>';return;}cart.innerHTML='';
 state.cart.forEach((c,i)=>{cart.innerHTML+=`<div class="cart-item"><span>${c.name}</span><span class="price">${c.price}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>`;});}
-
 function renderMoney(){const pool=PRIORITIES[state.priority].money;
 const spent=state.cart.reduce((s,c)=>s+c.price,0);const c=document.getElementById('money-counter');
 c.textContent=`${spent} / ${pool} монет`;c.className='counter '+(spent>pool?'over':spent===pool?'ok':'');}
-
 function renderRaceAbility(){const r=RACES[state.race];
 document.getElementById('race-ability').innerHTML=`<b>Способность расы:</b> ${r.ability}`;}
-
 function renderClassInfo(){const c=CLASSES[state.class];let extra='';
 if(state.class==='ranger'&&state.rangerChoice)extra=` +2 против: <b>${state.rangerChoice}</b>`;
 if(state.class==='magus'&&state.magusSchools?.length)extra=` Школы: <b>${state.magusSchools.map(s=>SKILLS[s].name).join(', ')}</b>`;
 if(state.class==='druid'&&state.druidOrder){const orders={wild:'Дикий',storm:'Буря',beast:'Зверь',leaf:'Лист'};extra=` Орден: <b>${orders[state.druidOrder]}</b>`;}
 if(state.class==='cleric'&&state.god)extra=` Оружие бога: <b>${GODS[state.god].weapon}</b>`;
 document.getElementById('class-info').innerHTML=`<b>${c.name}:</b> ${c.info}${extra}`;}
-
 function renderStats(){
 const hp=14+(state.attrs.TEL||1);const pool=getMagicPool();const spent=getTotalSpent();
 const atkList=document.getElementById('attacks-list');const weaponLines=[];
@@ -680,12 +645,9 @@ magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) +
 magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет магических навыков.</p>';
 const s=document.getElementById('stats');
 s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>`;}
-
-// ===== ОПЫТ =====
 function toggleXP(){state.xpOpen=!state.xpOpen;
 document.getElementById('xp-section').classList.toggle('hidden',!state.xpOpen);
 if(state.xpOpen){renderXP();window.scrollTo(0,document.getElementById('xp-section').offsetTop-16);}}
-
 function addSessionXP(){
 const inp=document.getElementById('xp-session');
 const amt=Math.max(3,parseInt(inp.value)||3);
@@ -693,7 +655,6 @@ state.xpEarned+=amt;
 state.sessionLog.push({session:state.sessionLog.length+1,xp:amt});
 inp.value=3;
 renderXP();save();}
-
 function buySkillUpgrade(id){
 const cur=state.skills[id]||0;
 const cost=nextLevelCost(cur);
@@ -701,13 +662,11 @@ if(cost>xpAvail()){alert('Не хватает опыта. Нужно: '+cost+', 
 state.skills[id]=cur+1;
 state.xpSpent+=cost;
 render();renderXP();save();}
-
 function updateSpellList(){
 const school=document.getElementById('xp-spell-school').value;
 const sel=document.getElementById('xp-spell-select');
 if(!school||!SPELLS[school]){sel.innerHTML='';return;}
 sel.innerHTML=SPELLS[school].list.map((s,i)=>`<option value="${i}">${s}</option>`).join('');}
-
 function buySpell(){
 const school=document.getElementById('xp-spell-school').value;
 const idx=document.getElementById('xp-spell-select').value;
@@ -716,8 +675,7 @@ if(5>xpAvail()){alert('Не хватает опыта. Нужно: 5, есть: 
 const text=SPELLS[school].list[parseInt(idx)];
 state.purchasedSpells.push({school:school,text:text});
 state.xpSpent+=5;
-renderXP();save();}
-
+render();renderXP();save();}
 function renderXP(){
 const counter=document.getElementById('xp-counter');
 counter.innerHTML=`Накоплено: ${state.xpEarned} <span>|</span> Потрачено: ${state.xpSpent} <span>|</span> Остаток: <b style="color:#5ae05a">${xpAvail()}</b>`;
@@ -727,36 +685,25 @@ const list=document.getElementById('xp-skills');
 list.innerHTML='';
 const skillIds=Object.keys(state.skills);
 if(!skillIds.length){list.innerHTML='<p class="hint">Нет навыков для повышения.</p>';}
-else{
-  skillIds.forEach(id=>{
-    const sk=SKILLS[id];if(!sk)return;
-    const cur=state.skills[id];
-    const cost=nextLevelCost(cur);
-    const can=cost<=xpAvail();
-    list.innerHTML+=`<div class="xp-skill-row"><span>${sk.name} ${cur} → ${cur+1}</span><span style="color:#d4a95a">${cost} опыта</span><button class="small" ${can?'':'disabled'} onclick="buySkillUpgrade('${id}')">Поднять</button></div>`;
-  });
-}
-// Школы магии
+else{skillIds.forEach(id=>{const sk=SKILLS[id];if(!sk)return;
+const cur=state.skills[id];const cost=nextLevelCost(cur);
+const can=cost<=xpAvail();
+list.innerHTML+=`<div class="xp-skill-row"><span>${sk.name} ${cur} → ${cur+1}</span><span style="color:#d4a95a">${cost} опыта</span><button class="small" ${can?'':'disabled'} onclick="buySkillUpgrade('${id}')">Поднять</button></div>`;});}
 const schoolSel=document.getElementById('xp-spell-school');
 const magicSkills=getAvailableSkills().filter(s=>SKILLS[s]&&SKILLS[s].cat==='magic');
 const ref=magicSkills.join(',');
 if(schoolSel.dataset.refresh!==ref){
   schoolSel.innerHTML=magicSkills.map(s=>`<option value="${s}">${SKILLS[s].name}</option>`).join('');
   schoolSel.dataset.refresh=ref;
-  updateSpellList();
-}
-// Купленные заклинания
+  updateSpellList();}
 const purch=document.getElementById('xp-purchased');
 purch.innerHTML=state.purchasedSpells.length?state.purchasedSpells.map(p=>`<div>${SPELLS[p.school].name}: ${p.text}</div>`).join(''):'<p class="hint">Нет купленных заклинаний.</p>';}
-
-// ===== СОБЫТИЯ =====
 function collect(){state.name=document.getElementById('name').value;
 state.gender=document.getElementById('gender').value;
 state.priority=document.getElementById('priority').value;
 const g=document.getElementById('god');if(g)state.god=g.value;
 const sr=document.getElementById('subrace');
 if(sr&&!document.getElementById('subrace-wrap').classList.contains('hidden'))state.subrace=sr.value;}
-
 function applyState(){document.getElementById('name').value=state.name||'';
 document.getElementById('gender').value=state.gender||'';
 document.getElementById('race').value=state.race;onRaceChange(true);
@@ -765,7 +712,6 @@ document.getElementById('priority').value=state.priority;
 if(state.subrace){const sr=document.getElementById('subrace');if(sr)sr.value=state.subrace;}
 if(state.god){const g=document.getElementById('god');if(g)g.value=state.god;}
 if(state.xpOpen){document.getElementById('xp-section').classList.remove('hidden');}}
-
 function onRaceChange(silent){state.race=document.getElementById('race').value;
 const r=RACES[state.race];const wrap=document.getElementById('subrace-wrap');
 const sel=document.getElementById('subrace');
@@ -776,7 +722,6 @@ sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
 const maxes=getMaxes();
 for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
-
 function onClassChange(silent){state.class=document.getElementById('class').value;
 const wrap=document.getElementById('god-wrap');wrap.classList.toggle('hidden',state.class!=='cleric');
 if(state.class!=='cleric'){state.god='';state.domainChoices={};}
@@ -787,13 +732,11 @@ const canHaveBeast=state.class==='ranger'||(state.class==='druid'&&state.druidOr
 if(!canHaveBeast)state.beast='';
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
-
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
 function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);applyState();render();}
 function reset(){if(!confirm('Сбросить?'))return;localStorage.removeItem('pf_char');location.reload();}
 function exportJSON(){collect();const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(state.name||'char')+'.json';a.click();}
 function importJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{try{state=JSON.parse(ev.target.result);applyState();render();}catch{alert('Ошибка чтения.');}};r.readAsText(f);};inp.click();}
-
 initSelects();
 document.getElementById('race').addEventListener('change',()=>onRaceChange());
 document.getElementById('subrace').addEventListener('change',e=>{state.subrace=e.target.value;onRaceChange();});
