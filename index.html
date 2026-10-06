@@ -312,7 +312,6 @@ storm:{name:'Грозовой элементаль',cost:1,hp:'+5хп',special:'
 
 const ENEMIES=['Гуманоиды','Великаны','Ящеры','Гоблины','Драконы','Нежить','Демоны','Аберрации','Ангелы','Феи','Животные','Призраки','Элементали'];
 const TERRAINS=['Леса','Горы','Равнины','Снега','Пустыни','Болота','Пещеры','Города'];
-
 const SHIELD_RESTRICTED=['alchemist','bard','wizard','druid','monk','ranger','sorcerer','rogue','magus'];
 
 const EQUIPMENT={
@@ -367,8 +366,7 @@ function initSelects(){
 const rs=document.getElementById('race');for(const k in RACES)rs.innerHTML+=`<option value="${k}">${RACES[k].name}</option>`;
 const cs=document.getElementById('class');for(const k in CLASSES)cs.innerHTML+=`<option value="${k}">${CLASSES[k].name}</option>`;
 const gs=document.getElementById('god');gs.innerHTML='<option value="">— выбери бога —</option>';
-for(const k in GODS)gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;
-}
+for(const k in GODS)gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;}
 
 function getMaxes(){const r=RACES[state.race];if(r.subraces&&state.subrace)return r.subraces[state.subrace].maxes;return r.maxes||{};}
 
@@ -445,7 +443,7 @@ MAGIC_LIST.forEach(sid=>{const checked=chosen.includes(sid);
 html+=`<label class="radio-item"><input type="checkbox" ${checked?'checked':''} onchange="toggleMagusSchool('${sid}')"> ${SKILLS[sid].name}</label>`;});
 html+=`</div>`;}
 if(cls.hasRangerChoice){const rc=state.rangerChoice;
-html+=`<h4>Следопыт — выбери ОДНО: врага ИЛИ местность</h4><div class="hint">+2 к атаке/защите.</div><div class="radio-group">`;
+html+=`<h4>Следопыт — выбери ОДНО: врага ИЛИ местность</h4><div class="radio-group">`;
 ENEMIES.forEach(e=>{html+=`<label class="radio-item"><input type="radio" name="ranger" ${rc===e?'checked':''} onchange="setRanger('${e}','enemy')"> ${e}</label>`;});
 TERRAINS.forEach(t=>{html+=`<label class="radio-item"><input type="radio" name="ranger" ${rc===t?'checked':''} onchange="setRanger('${t}','terrain')"> ${t}</label>`;});
 html+=`</div>`;}
@@ -479,11 +477,42 @@ function setElementalForm(k){if(!k){state.elementalForm='';render();return;}cons
 const current=state.elementalForm?ELEMENTAL_FORMS[state.elementalForm].cost:0;const diff=e.cost-current;
 if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}state.elementalForm=k;render();}
 
+// ==== БАЛАНС МАГОСА ====
+function getMagusWeaponMax(){
+let max=0;
+for(const id in state.skills){
+  const sk=SKILLS[id];
+  if(!sk||sk.cat!=='weapon')continue;
+  if(state.skills[id]>max)max=state.skills[id];
+}
+return max;
+}
+function getMagusMagicMax(){
+let max=0;
+for(const id in state.skills){
+  const sk=SKILLS[id];
+  if(!sk||sk.cat!=='magic')continue;
+  if(state.skills[id]>max)max=state.skills[id];
+}
+return max;
+}
+function magusBalanceOK(){
+if(state.class!=='magus')return true;
+return Math.abs(getMagusWeaponMax()-getMagusMagicMax())<=1;
+}
+
 function renderSkills(){
 const avail=getAvailableSkills();const list=document.getElementById('skill-list');list.innerHTML='';
-if(!avail.length){if(state.class==='cleric'&&!state.god)list.innerHTML='<p class="hint">Выбери бога.</p>';
-else if(state.class==='magus'&&(!state.magusSchools||state.magusSchools.length<2))list.innerHTML='<p class="hint">Выбери 2 школы магии выше.</p>';
-else list.innerHTML='<p class="hint">Нет доступных навыков.</p>';return;}
+// Баннер магоса
+if(state.class==='magus'){
+  const w=getMagusWeaponMax();const m=getMagusMagicMax();
+  const ok=Math.abs(w-m)<=1;
+  const color=ok?'#5ae05a':'#e05a5a';
+  list.innerHTML+=`<div class="hint" style="color:${color};font-size:12px;margin-bottom:8px">Баланс магоса: лучший оружейный = ${w}, лучший магический = ${m}. Разница должна быть ≤ 1.</div>`;
+}
+if(!avail.length){if(state.class==='cleric'&&!state.god)list.innerHTML+='<p class="hint">Выбери бога.</p>';
+else if(state.class==='magus'&&(!state.magusSchools||state.magusSchools.length<2))list.innerHTML+='<p class="hint">Выбери 2 школы магии выше.</p>';
+else list.innerHTML+='<p class="hint">Нет доступных навыков.</p>';return;}
 const groups={weapon:'Оружейные',magic:'Магические',util:'Вспомогательные',special:'Особые'};const byCat={};
 avail.forEach(id=>{if(!SKILLS[id])return;const cat=SKILLS[id].cat;(byCat[cat]=byCat[cat]||[]).push(id);});
 for(const cat in groups){if(!byCat[cat])continue;
@@ -496,7 +525,16 @@ let used=0;for(const k in state.skills)used+=state.skills[k];
 const pool=PRIORITIES[state.priority].skills;const c=document.getElementById('skill-counter');
 c.textContent=`${used} / ${pool}`;c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
 
-function setSkill(id,v){v=Math.max(0,parseInt(v)||0);if(v===0)delete state.skills[id];else state.skills[id]=v;render();}
+function setSkill(id,v){
+v=Math.max(0,parseInt(v)||0);
+const prev=state.skills[id]||0;
+if(v===0)delete state.skills[id];else state.skills[id]=v;
+if(state.class==='magus'&&!magusBalanceOK()){
+  if(prev===0)delete state.skills[id];else state.skills[id]=prev;
+  alert('Магос: лучший оружейный и лучший магический навык не могут отличаться больше чем на 1.');
+  render();return;
+}
+render();}
 
 function renderAlchemy(){
 const sec=document.getElementById('alchemy-section');
