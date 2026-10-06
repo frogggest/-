@@ -32,9 +32,12 @@ select{min-width:150px}
 .skill-attr{color:#666;font-size:11px}
 .skill-total{color:#d4a95a;font-weight:bold;font-size:12px;text-align:right}
 .spell-group{margin:10px 0}
-.spell-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px}
-.spell-item{display:flex;align-items:flex-start;gap:6px;padding:3px 4px;font-size:12px;cursor:pointer}
-.spell-item input{margin-top:2px}
+.spell-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:2px}
+.spell-item{display:flex;align-items:flex-start;gap:6px;padding:3px 4px;font-size:12px}
+.spell-item label{display:flex;align-items:center;gap:6px;cursor:pointer;flex:1}
+.spell-enh{display:flex;align-items:center;gap:4px;font-size:11px;color:#888;margin-left:auto}
+.spell-enh button{padding:1px 5px;font-size:10px;background:#333;color:#d4a95a}
+.spell-enh button:hover{background:#444}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .stat-box{background:#1a1a1a;padding:10px;border-radius:6px;border:1px solid #333;text-align:center}
 .stat-box .label{color:#888;font-size:11px}
@@ -57,8 +60,15 @@ button.small{padding:3px 8px;font-size:11px}
 .shop-item{display:grid;grid-template-columns:1fr 60px 80px;gap:8px;padding:6px 12px;border-top:1px solid #2a2a2a;align-items:center;font-size:12px}
 .shop-item .price{color:#d4a95a;font-weight:bold;text-align:right}
 .shop-item .restricted{color:#666;font-style:italic;font-size:11px}
-.cart-item{display:grid;grid-template-columns:1fr 60px 30px;gap:8px;padding:4px 0;border-bottom:1px solid #2a2a2a;font-size:12px;align-items:center}
+.cart-item{padding:8px 0;border-bottom:1px solid #2a2a2a;font-size:12px}
 .cart-item:last-child{border-bottom:none}
+.cart-row{display:grid;grid-template-columns:1fr 70px 30px;gap:8px;align-items:center}
+.cart-row .price{color:#d4a95a;font-weight:bold;text-align:right}
+.cart-upgrades{margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11px;color:#888}
+.cart-upgrades button{padding:2px 6px;font-size:10px;background:#333;color:#d4a95a;margin:0}
+.cart-upgrades button:hover{background:#444}
+.cart-upgrades button:disabled{background:#222;color:#555}
+.upg-tag{color:#5ae05a}
 .hidden{display:none}
 .pool-banner{background:#2a2a2a;border-left:3px solid #d4a95a;padding:8px 12px;border-radius:4px;font-size:13px;margin-bottom:8px}
 .pool-banner b{color:#d4a95a}
@@ -132,6 +142,7 @@ button.small{padding:3px 8px;font-size:11px}
 <h2>Заклинания <span id="spell-counter" class="counter"></span></h2>
 <div id="pool-banner" class="pool-banner"></div>
 <div id="spell-list"></div>
+<div class="hint">Свиток усиления: 30 монет за +1 уровень, +20 за каждый следующий (макс +5 к урону/длительности/дебаффу).</div>
 </section>
 <section id="beasts-section" class="hidden">
 <h2>Верный зверь <span id="beast-counter" class="counter"></span></h2>
@@ -142,6 +153,7 @@ button.small{padding:3px 8px;font-size:11px}
 <div id="shop"></div>
 <h3>Корзина</h3>
 <div id="cart"></div>
+<div class="hint">Заточка оружия до +3: 1-я = 2×цена, 2-я = 3×цена, 3-я = 4×цена (каждая даёт +1 урона). Укрепление брони/щита до +2: 1-е = 2×цена, 2-е = 3×цена (+1 защиты).</div>
 </section>
 <section>
 <h2>Итоговые характеристики</h2>
@@ -217,7 +229,7 @@ barbarian:{name:'Варвар',fixed:['blades','blunt','axes','unarmed','dualwie
 fighter:{name:'Воин',fixed:['blades','blunt','axes','polearms','unarmed','dualwield'],info:'Стойки: Защитная, Атакующая, Дуэльная.'},
 wizard:{name:'Волшебник',fixed:['staves','evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Заклинания стоят 1 очко вместо 2.'},
 druid:{name:'Друид',fixed:['staves','polearms','evocation','abjuration','conjuration'],info:'Орден: Дикий/Бури/Зверя/Листа.',hasDruidOrder:true},
-cleric:{name:'Жрец',fixed:['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Навыки берутся из домейнов бога.'},
+cleric:{name:'Жрец',fixed:['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Навыки из домейнов бога.'},
 monk:{name:'Монах',fixed:['staves','unarmed','blades','evocation','abjuration','conjuration','qi'],info:'Ци: Железная кожа, Очищение.'},
 paladin:{name:'Паладин',fixed:['blades','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.'},
 ranger:{name:'Следопыт',fixed:['bows','crossbows','blades','polearms','conjuration','transmutation','thrown'],info:'+2 против выбранного врага или в местности.',hasRangerChoice:true,hasBeast:true},
@@ -240,7 +252,7 @@ lamash:{name:'Ламашту (зло)',domains:['Хаос','Зло','Безум�
 norgorber:{name:'Норгобер (зло)',domains:['Смерть','Зло','Обман','Знание'],weapon:'Короткий меч'},
 nethys:{name:'Нефис (добро)',domains:['Магия','Знание','Руны','Защита'],weapon:'Посох'},
 pharasma:{name:'Фаразма (добро)',domains:['Смерть','Исцеление','Знание','Покой'],weapon:'Кинжал'},
-rov:{name:'Ровагур (зло)',domains:['Хаос','Разрушение','Зло','Ярость','Смерть'],weapon:'Копьё'},
+rov:{name:'Ровагуг (зло)',domains:['Хаос','Разрушение','Зло','Ярость','Смерть'],weapon:'Копьё'},
 sarenrae:{name:'Саренрей (добро)',domains:['Добро','Огонь','Исцеление','Солнце'],weapon:'Скимитар'},
 shelyn:{name:'Шелин (добро)',domains:['Добро','Очарование','Удача','Защита'],weapon:'Глефа'},
 torag:{name:'Тораг (добро)',domains:['Земля','Искусство','Закон','Защита'],weapon:'Боевой молот'},
@@ -356,13 +368,14 @@ gear:{name:'Снаряжение и расходники',items:[
 {id:'food',name:'Еда',price:5,note:'1-4 хп'},{id:'resurrect',name:'Свиток воскрешения',price:250,note:'Возврат к жизни'},
 {id:'rope',name:'Веревка',price:7,note:'Подъёмы'},{id:'lockpick',name:'Отмычка',price:10,note:'Взлом'},
 {id:'alchemy',name:'Алхимический набор (1 элемент)',price:20,note:'Только алхимику',only:['alchemist']},
-{id:'buffscroll',name:'Свиток усиления',price:30,note:'Усиливает заклинание'}]}
+{id:'buffscroll',name:'Свиток усиления',price:30,note:'+1 к заклинанию, +20 за следующий уровень'}]}
 };
 let state={name:'',gender:'',race:'human',subrace:'',class:'fighter',god:'',priority:'A',
 attrs:{SIL:1,TEL:1,LVK:1,INT:1,MDR:1,HAR:1},skills:{},spells:{},cart:[],gear:'',
 magusSchools:[],domainChoices:{},rangerChoice:'',rangerType:'',beast:'',
 druidOrder:'',wildForm:'',elementalForm:'',potions:{},alchemyFire:0,
-xpEarned:0,xpSpent:0,sessionLog:[],purchasedSpells:[],xpOpen:false};
+xpEarned:0,xpSpent:0,sessionLog:[],purchasedSpells:[],xpOpen:false,
+spellEnhance:{}};
 function xpAvail(){return state.xpEarned-state.xpSpent;}
 function canUseMagic(){if(state.class==='cleric'||state.class==='paladin')return true;return state.priority==='B';}
 function initSelects(){
@@ -402,6 +415,23 @@ function validateMagicAccess(){if(!canUseMagic()&&(!state.purchasedSpells||!stat
 function getAlchemySetCount(){let n=0;state.cart.forEach(c=>{if(c.id==='alchemy')n++;});return n;}
 function getAlchemyPool(){return Math.ceil((state.attrs.INT||1)/2)+getAlchemySetCount();}
 function getSpentOnPotions(){let t=0;for(const k in state.potions)t+=(state.potions[k]||0);return t;}
+function isWeaponItem(cat){return cat==='melee'||cat==='ranged';}
+function isArmorItem(cat){return cat==='armor'||cat==='shields';}
+function sharpCost(price,level){return (level+1)*price;}
+function cartItemTotal(c){
+  let total=c.price;
+  if(c.sharp)for(let i=1;i<=c.sharp;i++)total+=sharpCost(c.price,i);
+  if(c.reinf)for(let i=1;i<=c.reinf;i++)total+=sharpCost(c.price,i);
+  return total;
+}
+function cartTotal(){return state.cart.reduce((s,c)=>s+cartItemTotal(c),0);}
+function spellEnhTotal(){
+  let t=0;
+  for(const id in state.spellEnhance){const lvl=state.spellEnhance[id]||0;
+    for(let i=1;i<=lvl;i++) t+=30+(i-1)*20;}
+  return t;
+}
+function totalSpentMoney(){return cartTotal()+spellEnhTotal();}
 function render(){renderAttrs();renderDomains();renderSpecial();renderSkills();renderAlchemy();renderSpells();renderBeasts();renderShop();renderCart();renderStats();renderRaceAbility();renderClassInfo();renderMoney();if(state.xpOpen)renderXP();}
 function renderAttrs(){
 const maxes=getMaxes();const grid=document.getElementById('attr-grid');grid.innerHTML='';
@@ -532,6 +562,22 @@ POTIONS.forEach(p=>{const v=state.potions[p.id]||0;
 list.innerHTML+=`<div class="skill-item"><span class="skill-name">${p.name} <span class="skill-attr">(${p.effect})</span></span><input type="number" min="0" value="${v}" onchange="setPotion('${p.id}',this.value)"><span class="skill-total">${v>0?v+' шт.':''}</span></div>`;});}
 function setPotion(id,v){v=Math.max(0,parseInt(v)||0);if(v===0)delete state.potions[id];else state.potions[id]=v;render();}
 function setAlchemyFire(v){v=Math.max(0,Math.min(4,parseInt(v)||0));state.alchemyFire=v;render();}
+function getSpellEnhanceLevel(id){return state.spellEnhance[id]||0;}
+function spellEnhCostNext(lvl){return 30+lvl*20;}
+function enhanceSpell(id){
+const cur=getSpellEnhanceLevel(id);
+if(cur>=5){alert('Максимум +5.');return;}
+const cost=spellEnhCostNext(cur);
+const pool=PRIORITIES[state.priority].money;
+if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужно: '+cost+', доступно: '+(pool-totalSpentMoney()));return;}
+state.spellEnhance[id]=cur+1;
+render();save();}
+function reduceSpell(id){
+const cur=getSpellEnhanceLevel(id);
+if(cur<=0)return;
+state.spellEnhance[id]=cur-1;
+if(state.spellEnhance[id]===0)delete state.spellEnhance[id];
+render();save();}
 function renderSpells(){
 const avail=getAvailableSkills();const magicAvail=avail.filter(s=>SKILLS[s]&&SKILLS[s].cat==='magic');
 const counter=document.getElementById('spell-counter');const banner=document.getElementById('pool-banner');
@@ -554,13 +600,17 @@ magicAvail.forEach(sid=>{
   sp.list.forEach((s,i)=>{
     const id=`${sid}_${i}`;
     const checked=state.spells[id]?'checked':'';
-    list.innerHTML+=`<label class="spell-item"><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span>${s}</span></label>`;
+    const enhLvl=getSpellEnhanceLevel(id);
+    const enhTag=enhLvl>0?` <span style="color:#5ae05a">+${enhLvl}</span>`:'';
+    list.innerHTML+=`<div class="spell-item"><label><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span>${s}${enhTag}</span></label><span class="spell-enh"><button onclick="enhanceSpell('${id}')" title="Усилить (+${spellEnhCostNext(enhLvl)} мон.)">+</button>${enhLvl>0?`<button onclick="reduceSpell('${id}')" title="Убрать усиление">−</button>`:''}</span></div>`;
   });
   (state.purchasedSpells||[]).forEach((p,pi)=>{
     if(p.school!==sid)return;
     const id=`purchased_${pi}`;
     const checked=state.spells[id]?'checked':'';
-    list.innerHTML+=`<label class="spell-item"><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span style="color:#5ae05a">${p.text} <i style="font-size:10px;opacity:0.7">(куплено)</i></span></label>`;
+    const enhLvl=getSpellEnhanceLevel(id);
+    const enhTag=enhLvl>0?` <span style="color:#5ae05a">+${enhLvl}</span>`:'';
+    list.innerHTML+=`<div class="spell-item"><label><input type="checkbox" ${checked} onchange="toggleSpell('${id}')"><span style="color:#5ae05a">${p.text}${enhTag} <i style="font-size:10px;opacity:0.7">(куплено)</i></span></label><span class="spell-enh"><button onclick="enhanceSpell('${id}')" title="Усилить (+${spellEnhCostNext(enhLvl)} мон.)">+</button>${enhLvl>0?`<button onclick="reduceSpell('${id}')" title="Убрать усиление">−</button>`:''}</span></div>`;
   });
   list.innerHTML+='</div></div>';
 });}
@@ -588,7 +638,7 @@ const currentBeastCost=state.beast?BEASTS[state.beast].cost:0;const diff=b.cost-
 if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}state.beast=k;render();}
 function renderShop(){
 const shop=document.getElementById('shop');shop.innerHTML='';
-for(const catKey in EQUIPMENT){const cat=EQUIPMENT[catKey];const isWeapon=catKey==='melee'||catKey==='ranged';
+for(const catKey in EQUIPMENT){const cat=EQUIPMENT[catKey];const isWeapon=isWeaponItem(catKey);
 let html=`<details class="shop-cat"><summary>${cat.name}</summary>`;
 cat.items.forEach(it=>{const blocked=isBlocked(it,catKey);const price=it.price;
 const noteHtml=(!isWeapon&&it.note)?` <span class="restricted">(${it.note})</span>`:'';
@@ -602,15 +652,58 @@ if(!state.god)return true;const allowed=GOD_WEAPONS_MAP[state.god]||[];
 if(!allowed.includes(item.id))return true;}return false;}
 function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
-const pool=PRIORITIES[state.priority].money;const spent=state.cart.reduce((s,c)=>s+c.price,0);
-if(spent+item.price>pool){alert('Не хватает золота.');return;}
-state.cart.push({cat,id,name:item.name,price:item.price});render();}
-function removeFromCart(i){state.cart.splice(i,1);render();}
-function renderCart(){const cart=document.getElementById('cart');
-if(!state.cart.length){cart.innerHTML='<p class="hint">Пусто.</p>';return;}cart.innerHTML='';
-state.cart.forEach((c,i)=>{cart.innerHTML+=`<div class="cart-item"><span>${c.name}</span><span class="price">${c.price}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>`;});}
+const pool=PRIORITIES[state.priority].money;
+if(totalSpentMoney()+item.price>pool){alert('Не хватает золота.');return;}
+state.cart.push({cat,id,name:item.name,price:item.price,sharp:0,reinf:0});render();save();}
+function removeFromCart(i){state.cart.splice(i,1);render();save();}
+function sharpenItem(i){
+const c=state.cart[i];if(!c)return;
+if(!isWeaponItem(c.cat))return;
+if(c.sharp>=3){alert('Максимум +3.');return;}
+const cost=sharpCost(c.price,c.sharp+1);
+const pool=PRIORITIES[state.priority].money;
+if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужно: '+cost);return;}
+c.sharp++;render();save();}
+function reinforceItem(i){
+const c=state.cart[i];if(!c)return;
+if(!isArmorItem(c.cat))return;
+if(c.reinf>=2){alert('Максимум +2.');return;}
+const cost=sharpCost(c.price,c.reinf+1);
+const pool=PRIORITIES[state.priority].money;
+if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужно: '+cost);return;}
+c.reinf++;render();save();}
+function reduceSharpen(i){
+const c=state.cart[i];if(!c||!c.sharp)return;
+c.sharp--;render();save();}
+function reduceReinf(i){
+const c=state.cart[i];if(!c||!c.reinf)return;
+c.reinf--;render();save();}
+function renderCart(){
+const cart=document.getElementById('cart');
+if(!state.cart.length){cart.innerHTML='<p class="hint">Пусто.</p>';return;}
+cart.innerHTML='';
+state.cart.forEach((c,i)=>{
+  let extra='';
+  if(isWeaponItem(c.cat)&&c.sharp>0)extra+=` <span class="upg-tag">+${c.sharp} заточка</span>`;
+  if(isArmorItem(c.cat)&&c.reinf>0)extra+=` <span class="upg-tag">+${c.reinf} укрепление</span>`;
+  let upgRow='';
+  if(isWeaponItem(c.cat)){
+    const nextCost=sharpCost(c.price,c.sharp+1);
+    upgRow+=`<button onclick="sharpenItem(${i})" ${c.sharp>=3?'disabled':''}>Заточить (+${nextCost})</button>`;
+    if(c.sharp>0)upgRow+=`<button onclick="reduceSharpen(${i})">−</button>`;
+  }
+  if(isArmorItem(c.cat)){
+    const nextCost=sharpCost(c.price,c.reinf+1);
+    upgRow+=`<button onclick="reinforceItem(${i})" ${c.reinf>=2?'disabled':''}>Укрепить (+${nextCost})</button>`;
+    if(c.reinf>0)upgRow+=`<button onclick="reduceReinf(${i})">−</button>`;
+  }
+  cart.innerHTML+=`<div class="cart-item">
+    <div class="cart-row"><span>${c.name}${extra}</span><span class="price">${cartItemTotal(c)}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>
+    ${upgRow?`<div class="cart-upgrades">${upgRow}</div>`:''}
+  </div>`;
+});}
 function renderMoney(){const pool=PRIORITIES[state.priority].money;
-const spent=state.cart.reduce((s,c)=>s+c.price,0);const c=document.getElementById('money-counter');
+const spent=totalSpentMoney();const c=document.getElementById('money-counter');
 c.textContent=`${spent} / ${pool} монет`;c.className='counter '+(spent>pool?'over':spent===pool?'ok':'');}
 function renderRaceAbility(){const r=RACES[state.race];
 document.getElementById('race-ability').innerHTML=`<b>Способность расы:</b> ${r.ability}`;}
@@ -620,6 +713,7 @@ if(state.class==='magus'&&state.magusSchools?.length)extra=` Школы: <b>${st
 if(state.class==='druid'&&state.druidOrder){const orders={wild:'Дикий',storm:'Буря',beast:'Зверь',leaf:'Лист'};extra=` Орден: <b>${orders[state.druidOrder]}</b>`;}
 if(state.class==='cleric'&&state.god)extra=` Оружие бога: <b>${GODS[state.god].weapon}</b>`;
 document.getElementById('class-info').innerHTML=`<b>${c.name}:</b> ${c.info}${extra}`;}
+function parseDmg(v){if(typeof v==='number')return{v1:v,v2:null};const m=String(v).match(/^(\d+)\((\d+)\)$/);if(m)return{v1:parseInt(m[1]),v2:parseInt(m[2])};return{v1:0,v2:null};}
 function renderStats(){
 const hp=14+(state.attrs.TEL||1);const pool=getMagicPool();const spent=getTotalSpent();
 const atkList=document.getElementById('attacks-list');const weaponLines=[];
@@ -630,10 +724,13 @@ const attrLabel=getAttrLabel(sk.attr);
 weaponLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel}) = <b style="color:#d4a95a">${total}d6</b></div>`);}
 atkList.innerHTML=weaponLines.length?weaponLines.join(''):'<p class="hint">Нет оружейных навыков.</p>';
 const defBlock=document.getElementById('defense-block');const defSkill=state.skills.defense||0;
-let armorBonus=0,armorName='—';let shieldBonus=0,shieldName='—';
+let armorBonus=0,armorName='—';
+let shieldBonus=0,shieldName='—';
+let armorReinf=0,shieldReinf=0;
 state.cart.forEach(c=>{const it=findItem(c.cat,c.id);if(!it)return;
-if(c.cat==='armor'&&(it.def||0)>armorBonus){armorBonus=it.def||0;armorName=it.name;}
-if(c.cat==='shields'&&(it.def||0)>shieldBonus){shieldBonus=it.def||0;shieldName=it.name;}});
+if(c.cat==='armor'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>armorBonus){armorBonus=totalDef;armorName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
+if(c.cat==='shields'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>shieldBonus){shieldBonus=totalDef;shieldName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
+});
 const defTotal=defSkill+armorBonus+shieldBonus;
 defBlock.innerHTML=`<div class="line"><b>Защита</b> (навык): ${defSkill}</div><div class="line"><b>Броня</b> (${armorName}): +${armorBonus}</div><div class="line"><b>Щит</b> (${shieldName}): +${shieldBonus}</div><div class="line total">Итого: <b style="color:#d4a95a;font-size:18px">${defTotal}d6</b></div>`;
 const magList=document.getElementById('magic-attacks-list');const magicLines=[];
@@ -644,7 +741,10 @@ const attrLabel=getAttrLabel(sk.attr);
 magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel}) = <b style="color:#d4a95a">${total}d6</b></div>`);}
 magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет магических навыков.</p>';
 const s=document.getElementById('stats');
-s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>`;}
+const weaponInfo=[];
+state.cart.forEach(c=>{if(isWeaponItem(c.cat)&&c.sharp>0){const it=findItem(c.cat,c.id);if(it){const d=parseDmg(it.dmg);weaponInfo.push(`${it.name}: урон ${d.v1+(c.sharp||0)}${d.v2?`(${d.v2+(c.sharp||0)})`:''}`);}}});
+const weaponLine=weaponInfo.length?`<div class="label" style="color:#5ae05a;font-size:11px;margin-top:4px">${weaponInfo.join(' · ')}</div>`:'';
+s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>${weaponLine?`<div class="stat-box"><div class="label">Заточенное оружие</div>${weaponInfo.map(w=>`<div class="value" style="font-size:13px;font-weight:normal;color:#5ae05a;margin-top:4px">${w}</div>`).join('')}</div>`:''}`;}
 function toggleXP(){state.xpOpen=!state.xpOpen;
 document.getElementById('xp-section').classList.toggle('hidden',!state.xpOpen);
 if(state.xpOpen){renderXP();window.scrollTo(0,document.getElementById('xp-section').offsetTop-16);}}
@@ -733,10 +833,16 @@ if(!canHaveBeast)state.beast='';
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
-function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);applyState();render();}
+function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);
+if(!state.spellEnhance)state.spellEnhance={};
+if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;});}
+applyState();render();}
 function reset(){if(!confirm('Сбросить?'))return;localStorage.removeItem('pf_char');location.reload();}
 function exportJSON(){collect();const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(state.name||'char')+'.json';a.click();}
-function importJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{try{state=JSON.parse(ev.target.result);applyState();render();}catch{alert('Ошибка чтения.');}};r.readAsText(f);};inp.click();}
+function importJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{try{state=JSON.parse(ev.target.result);
+if(!state.spellEnhance)state.spellEnhance={};
+if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;});}
+applyState();render();}catch{alert('Ошибка чтения.');}};r.readAsText(f);};inp.click();}
 initSelects();
 document.getElementById('race').addEventListener('change',()=>onRaceChange());
 document.getElementById('subrace').addEventListener('change',e=>{state.subrace=e.target.value;onRaceChange();});
