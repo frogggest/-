@@ -229,9 +229,9 @@ barbarian:{name:'Варвар',fixed:['blades','blunt','axes','unarmed','dualwie
 fighter:{name:'Воин',fixed:['blades','blunt','axes','polearms','unarmed','dualwield'],info:'Стойки: Защитная, Атакующая, Дуэльная.'},
 wizard:{name:'Волшебник',fixed:['staves','evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Заклинания стоят 1 очко вместо 2.'},
 druid:{name:'Друид',fixed:['staves','polearms','evocation','abjuration','conjuration'],info:'Орден: Дикий/Бури/Зверя/Листа.',hasDruidOrder:true},
-cleric:{name:'Жрец',fixed:['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Навыки из домейнов бога.',hasGod:true},
+cleric:{name:'Жрец',fixed:['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Навыки из домейнов бога.'},
 monk:{name:'Монах',fixed:['staves','unarmed','blades','evocation','abjuration','conjuration','qi'],info:'Ци: Железная кожа, Очищение.'},
-paladin:{name:'Паладин',fixed:['blades','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита. Бог выбирается символически (без домейнов).',hasGod:true,godSymbolic:true},
+paladin:{name:'Паладин',fixed:['blades','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.'},
 ranger:{name:'Следопыт',fixed:['bows','crossbows','blades','polearms','conjuration','transmutation','thrown'],info:'+2 против выбранного врага или в местности.',hasRangerChoice:true,hasBeast:true},
 sorcerer:{name:'Чародей',fixed:['blades','evocation','necromancy','transmutation','illusion','enchantment','abjuration','conjuration'],info:'Источник крови даёт +1 к школе.'},
 rogue:{name:'Плут',fixed:['blades','thrown','illusion','transmutation','bows'],info:'Невидимость. +3 урона из невидимости.'},
@@ -261,7 +261,6 @@ zonkuthon:{name:'Зон-Кутон (зло)',domains:['Тьма','Зло','За�
 groetus:{name:'Гротус (зло)',domains:['Хаос','Тьма','Разрушение','Смерть','Безумие'],weapon:'Тяжелый цеп'},
 milani:{name:'Милани (добро)',domains:['Добро','Освобождение','Защита'],weapon:'Моргенштерн'}
 };
-const PALADIN_GOD_KEYS=['abadar','torag','shelyn','iomedae','erastil','sarenrae','irori','milani'];
 const GOD_WEAPONS_MAP={
 abadar:['crossbow','heavyxbow','silverxbow','handxbow'],asmodeus:['heavychain'],calistria:['darts10'],
 cayden:['rapier'],desna:['starnives'],erastil:['longbow','composite','silverbow'],gorum:['greatsword'],
@@ -382,19 +381,8 @@ function canUseMagic(){if(state.class==='cleric'||state.class==='paladin')return
 function initSelects(){
 const rs=document.getElementById('race');for(const k in RACES)rs.innerHTML+=`<option value="${k}">${RACES[k].name}</option>`;
 const cs=document.getElementById('class');for(const k in CLASSES)cs.innerHTML+=`<option value="${k}">${CLASSES[k].name}</option>`;
-populateGods();}
-function populateGods(){
-const gs=document.getElementById('god');
-gs.innerHTML='<option value="">— выбери бога —</option>';
-let keys=Object.keys(GODS);
-if(state.class==='paladin'){
-  keys=PALADIN_GOD_KEYS.slice();
-  if(state.race==='dwarf') keys=['torag'];
-}
-keys.forEach(k=>{gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;});
-if(state.god&&!keys.includes(state.god)) state.god='';
-if(gs.value!==state.god) gs.value=state.god||'';
-}
+const gs=document.getElementById('god');gs.innerHTML='<option value="">— выбери бога —</option>';
+for(const k in GODS)gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;}
 function getMaxes(){const r=RACES[state.race];if(r.subraces&&state.subrace)return r.subraces[state.subrace].maxes;return r.maxes||{};}
 function getAvailableSkills(){
 const c=CLASSES[state.class];let list=[...(c.fixed||[])];
@@ -431,7 +419,10 @@ function isWeaponItem(cat){return cat==='melee'||cat==='ranged';}
 function isArmorItem(cat){return cat==='armor'||cat==='shields';}
 function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
 function canBeSharpened(c){const it=findItem(c.cat,c.id);return it&&!it.noSharp;}
-function sharpCost(price,level,cheap){if(cheap)return level*price;return (level+1)*price;}
+function sharpCost(price,level,cheap){
+  if(cheap) return level*price;
+  return (level+1)*price;
+}
 function cartItemTotal(c){
   let total=c.price;
   const it=findItem(c.cat,c.id);
@@ -725,7 +716,6 @@ if(state.class==='ranger'&&state.rangerChoice)extra=` +2 против: <b>${stat
 if(state.class==='magus'&&state.magusSchools?.length)extra=` Школы: <b>${state.magusSchools.map(s=>SKILLS[s].name).join(', ')}</b>`;
 if(state.class==='druid'&&state.druidOrder){const orders={wild:'Дикий',storm:'Буря',beast:'Зверь',leaf:'Лист'};extra=` Орден: <b>${orders[state.druidOrder]}</b>`;}
 if(state.class==='cleric'&&state.god)extra=` Оружие бога: <b>${GODS[state.god].weapon}</b>`;
-if(state.class==='paladin'&&state.god)extra=` Символ веры: <b>${GODS[state.god].name}</b>`;
 document.getElementById('class-info').innerHTML=`<b>${c.name}:</b> ${c.info}${extra}`;}
 function parseDmg(v){if(typeof v==='number')return{v1:v,v2:null};const m=String(v).match(/^(\d+)\((\d+)\)$/);if(m)return{v1:parseInt(m[1]),v2:parseInt(m[2])};return{v1:0,v2:null};}
 function renderStats(){
@@ -813,7 +803,7 @@ purch.innerHTML=state.purchasedSpells.length?state.purchasedSpells.map(p=>`<div>
 function collect(){state.name=document.getElementById('name').value;
 state.gender=document.getElementById('gender').value;
 state.priority=document.getElementById('priority').value;
-const g=document.getElementById('god');if(g&&!document.getElementById('god-wrap').classList.contains('hidden'))state.god=g.value;
+const g=document.getElementById('god');if(g)state.god=g.value;
 const sr=document.getElementById('subrace');
 if(sr&&!document.getElementById('subrace-wrap').classList.contains('hidden'))state.subrace=sr.value;}
 function applyState(){document.getElementById('name').value=state.name||'';
@@ -822,7 +812,6 @@ document.getElementById('race').value=state.race;onRaceChange(true);
 document.getElementById('class').value=state.class;onClassChange(true);
 document.getElementById('priority').value=state.priority;
 if(state.subrace){const sr=document.getElementById('subrace');if(sr)sr.value=state.subrace;}
-populateGods();
 if(state.god){const g=document.getElementById('god');if(g)g.value=state.god;}
 if(state.xpOpen){document.getElementById('xp-section').classList.remove('hidden');}}
 function onRaceChange(silent){state.race=document.getElementById('race').value;
@@ -834,29 +823,16 @@ if(!state.subrace||!r.subraces[state.subrace])state.subrace=Object.keys(r.subrac
 sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
 const maxes=getMaxes();
 for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
-if(state.class==='paladin'&&state.race==='dwarf'){
-  state.god='torag';
-  populateGods();
-  const g=document.getElementById('god');if(g)g.value='torag';
-}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function onClassChange(silent){state.class=document.getElementById('class').value;
-const wrap=document.getElementById('god-wrap');
-const cls=CLASSES[state.class];
-wrap.classList.toggle('hidden',!(cls.hasGod));
-if(!cls.hasGod){state.god='';state.domainChoices={};}
+const wrap=document.getElementById('god-wrap');wrap.classList.toggle('hidden',state.class!=='cleric');
+if(state.class!=='cleric'){state.god='';state.domainChoices={};}
 if(state.class!=='magus')state.magusSchools=[];
 if(!CLASSES[state.class].hasRangerChoice){state.rangerChoice='';state.rangerType='';}
 if(state.class!=='druid'){state.druidOrder='';state.wildForm='';state.elementalForm='';}
 const canHaveBeast=state.class==='ranger'||(state.class==='druid'&&state.druidOrder==='beast');
 if(!canHaveBeast)state.beast='';
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
-populateGods();
-if(state.class==='paladin'&&state.race==='dwarf'){
-  state.god='torag';
-  populateGods();
-  const g=document.getElementById('god');if(g)g.value='torag';
-}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
 function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);
@@ -873,7 +849,7 @@ initSelects();
 document.getElementById('race').addEventListener('change',()=>onRaceChange());
 document.getElementById('subrace').addEventListener('change',e=>{state.subrace=e.target.value;onRaceChange();});
 document.getElementById('class').addEventListener('change',()=>onClassChange());
-document.getElementById('god').addEventListener('change',e=>{state.god=e.target.value;if(state.class==='cleric')state.domainChoices={};render();});
+document.getElementById('god').addEventListener('change',e=>{state.god=e.target.value;state.domainChoices={};render();});
 document.getElementById('priority').addEventListener('change',()=>{collect();validateMagicSelection();validateMagicAccess();render();});
 document.getElementById('gender').addEventListener('change',()=>{collect();});
 applyState();
