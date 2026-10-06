@@ -231,7 +231,7 @@ wizard:{name:'Волшебник',fixed:['staves','evocation','necromancy','tran
 druid:{name:'Друид',fixed:['staves','polearms','evocation','abjuration','conjuration'],info:'Орден: Дикий/Бури/Зверя/Листа.',hasDruidOrder:true},
 cleric:{name:'Жрец',fixed:['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'],info:'Навыки из домейнов бога.',hasGod:true},
 monk:{name:'Монах',fixed:['staves','unarmed','blades','evocation','abjuration','conjuration','qi'],info:'Ци: Железная кожа, Очищение.'},
-paladin:{name:'Паладин',fixed:['blades','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.',hasGod:true,godSymbolic:true},
+paladin:{name:'Паладин',fixed:['blades','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.'},
 ranger:{name:'Следопыт',fixed:['bows','crossbows','blades','polearms','conjuration','transmutation','thrown'],info:'+2 против выбранного врага или в местности.',hasRangerChoice:true,hasBeast:true},
 sorcerer:{name:'Чародей',fixed:['blades','evocation','necromancy','transmutation','illusion','enchantment','abjuration','conjuration'],info:'Источник крови даёт +1 к школе.'},
 rogue:{name:'Плут',fixed:['blades','thrown','illusion','transmutation','bows'],info:'Невидимость. +3 урона из невидимости.'},
@@ -261,7 +261,6 @@ zonkuthon:{name:'Зон-Кутон (зло)',domains:['Тьма','Зло','За�
 groetus:{name:'Гротус (зло)',domains:['Хаос','Тьма','Разрушение','Смерть','Безумие'],weapon:'Тяжелый цеп'},
 milani:{name:'Милани (добро)',domains:['Добро','Освобождение','Защита'],weapon:'Моргенштерн'}
 };
-const PALADIN_GOD_KEYS=['abadar','torag','shelyn','iomedae','erastil','sarenrae','irori','milani'];
 const GOD_WEAPONS_MAP={
 abadar:['crossbow','heavyxbow','silverxbow','handxbow'],asmodeus:['heavychain'],calistria:['darts10'],
 cayden:['rapier'],desna:['starnives'],erastil:['longbow','composite','silverbow'],gorum:['greatsword'],
@@ -386,11 +385,7 @@ populateGods();}
 function populateGods(){
 const gs=document.getElementById('god');
 gs.innerHTML='<option value="">— выбери бога —</option>';
-let keys=Object.keys(GODS);
-if(state.class==='paladin'){
-  keys=PALADIN_GOD_KEYS.slice();
-  if(state.race==='dwarf') keys=['torag'];
-}
+const keys=Object.keys(GODS);
 keys.forEach(k=>{gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;});
 if(state.god&&!keys.includes(state.god)) state.god='';
 if(gs.value!==state.god) gs.value=state.god||'';
@@ -840,7 +835,6 @@ if(!state.subrace||!r.subraces[state.subrace])state.subrace=Object.keys(r.subrac
 sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
 const maxes=getMaxes();
 for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
-if(state.class==='paladin'&&state.race==='dwarf'){state.god='torag';populateGods();}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function onClassChange(silent){state.class=document.getElementById('class').value;
 const cls=CLASSES[state.class];
@@ -852,7 +846,6 @@ const canHaveBeast=state.class==='ranger'||(state.class==='druid'&&state.druidOr
 if(!canHaveBeast)state.beast='';
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
 populateGods();
-if(state.class==='paladin'&&state.race==='dwarf'){state.god='torag';populateGods();}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
 function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);
