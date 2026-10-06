@@ -153,7 +153,7 @@ button.small{padding:3px 8px;font-size:11px}
 <div id="shop"></div>
 <h3>Корзина</h3>
 <div id="cart"></div>
-<div class="hint">Заточка оружия до +3: 1-я = 2×цена, 2-я = 3×цена, 3-я = 4×цена (каждая даёт +1 урона). Укрепление брони/щита до +2: 1-е = 2×цена, 2-е = 3×цена (+1 защиты).</div>
+<div class="hint">Заточка оружия до +3: 1-я = 2×цена, 2-я = 3×цена, 3-я = 4×цена (каждая даёт +1 урона). Фальшион точится дешевле: 1×, 2×, 3×. Укрепление брони/щита до +2: 1-е = 2×цена, 2-е = 3×цена (+1 защиты).</div>
 </section>
 <section>
 <h2>Итоговые характеристики</h2>
@@ -333,7 +333,7 @@ melee:{name:'Оружие ближнего боя',items:[
 {id:'dagger',name:'Кинжал',price:5,dmg:2},{id:'shortsword',name:'Короткий меч',price:10,dmg:3},
 {id:'longsword',name:'Длинный меч',price:20,dmg:'5(6)'},{id:'silversword',name:'Серебряный меч',price:45,dmg:4},
 {id:'scimitar',name:'Скимитар',price:26,dmg:4},{id:'greatsword',name:'Двуручный меч',price:50,dmg:8},
-{id:'dueling',name:'Дуэльный меч',price:22,dmg:'4(5)'},{id:'falchion',name:'Фальшион',price:15,dmg:3},
+{id:'dueling',name:'Дуэльный меч',price:22,dmg:'4(5)'},{id:'falchion',name:'Фальшион',price:15,dmg:3,cheapSharp:true},
 {id:'rapier',name:'Рапира',price:80,dmg:'6(7)'},{id:'club',name:'Дубинка',price:6,dmg:2},
 {id:'hammer',name:'Молоток',price:10,dmg:3},{id:'pick',name:'Клевец',price:26,dmg:3},
 {id:'warhammer',name:'Боевой молот',price:35,dmg:8},{id:'chain',name:'Цеп',price:20,dmg:4},
@@ -417,11 +417,17 @@ function getAlchemyPool(){return Math.ceil((state.attrs.INT||1)/2)+getAlchemySet
 function getSpentOnPotions(){let t=0;for(const k in state.potions)t+=(state.potions[k]||0);return t;}
 function isWeaponItem(cat){return cat==='melee'||cat==='ranged';}
 function isArmorItem(cat){return cat==='armor'||cat==='shields';}
-function sharpCost(price,level){return (level+1)*price;}
+function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
+function sharpCost(price,level,cheap){
+  if(cheap) return level*price;
+  return (level+1)*price;
+}
 function cartItemTotal(c){
   let total=c.price;
-  if(c.sharp)for(let i=1;i<=c.sharp;i++)total+=sharpCost(c.price,i);
-  if(c.reinf)for(let i=1;i<=c.reinf;i++)total+=sharpCost(c.price,i);
+  const it=findItem(c.cat,c.id);
+  const cheap=it&&it.cheapSharp;
+  if(c.sharp)for(let i=1;i<=c.sharp;i++)total+=sharpCost(c.price,i,cheap);
+  if(c.reinf)for(let i=1;i<=c.reinf;i++)total+=sharpCost(c.price,i,false);
   return total;
 }
 function cartTotal(){return state.cart.reduce((s,c)=>s+cartItemTotal(c),0);}
@@ -650,7 +656,6 @@ if(item.restricted&&item.restricted.includes(state.class))return true;
 if(state.class==='cleric'&&(catKey==='melee'||catKey==='ranged')){
 if(!state.god)return true;const allowed=GOD_WEAPONS_MAP[state.god]||[];
 if(!allowed.includes(item.id))return true;}return false;}
-function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
 const pool=PRIORITIES[state.priority].money;
 if(totalSpentMoney()+item.price>pool){alert('Не хватает золота.');return;}
@@ -660,7 +665,8 @@ function sharpenItem(i){
 const c=state.cart[i];if(!c)return;
 if(!isWeaponItem(c.cat))return;
 if(c.sharp>=3){alert('Максимум +3.');return;}
-const cost=sharpCost(c.price,c.sharp+1);
+const it=findItem(c.cat,c.id);
+const cost=sharpCost(c.price,c.sharp+1,it&&it.cheapSharp);
 const pool=PRIORITIES[state.priority].money;
 if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужно: '+cost);return;}
 c.sharp++;render();save();}
@@ -668,39 +674,34 @@ function reinforceItem(i){
 const c=state.cart[i];if(!c)return;
 if(!isArmorItem(c.cat))return;
 if(c.reinf>=2){alert('Максимум +2.');return;}
-const cost=sharpCost(c.price,c.reinf+1);
+const cost=sharpCost(c.price,c.reinf+1,false);
 const pool=PRIORITIES[state.priority].money;
 if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужно: '+cost);return;}
 c.reinf++;render();save();}
-function reduceSharpen(i){
-const c=state.cart[i];if(!c||!c.sharp)return;
-c.sharp--;render();save();}
-function reduceReinf(i){
-const c=state.cart[i];if(!c||!c.reinf)return;
-c.reinf--;render();save();}
+function reduceSharpen(i){const c=state.cart[i];if(!c||!c.sharp)return;c.sharp--;render();save();}
+function reduceReinf(i){const c=state.cart[i];if(!c||!c.reinf)return;c.reinf--;render();save();}
 function renderCart(){
 const cart=document.getElementById('cart');
 if(!state.cart.length){cart.innerHTML='<p class="hint">Пусто.</p>';return;}
 cart.innerHTML='';
 state.cart.forEach((c,i)=>{
+  const it=findItem(c.cat,c.id);
+  const cheap=it&&it.cheapSharp;
   let extra='';
   if(isWeaponItem(c.cat)&&c.sharp>0)extra+=` <span class="upg-tag">+${c.sharp} заточка</span>`;
   if(isArmorItem(c.cat)&&c.reinf>0)extra+=` <span class="upg-tag">+${c.reinf} укрепление</span>`;
   let upgRow='';
   if(isWeaponItem(c.cat)){
-    const nextCost=sharpCost(c.price,c.sharp+1);
+    const nextCost=sharpCost(c.price,c.sharp+1,cheap);
     upgRow+=`<button onclick="sharpenItem(${i})" ${c.sharp>=3?'disabled':''}>Заточить (+${nextCost})</button>`;
     if(c.sharp>0)upgRow+=`<button onclick="reduceSharpen(${i})">−</button>`;
   }
   if(isArmorItem(c.cat)){
-    const nextCost=sharpCost(c.price,c.reinf+1);
+    const nextCost=sharpCost(c.price,c.reinf+1,false);
     upgRow+=`<button onclick="reinforceItem(${i})" ${c.reinf>=2?'disabled':''}>Укрепить (+${nextCost})</button>`;
     if(c.reinf>0)upgRow+=`<button onclick="reduceReinf(${i})">−</button>`;
   }
-  cart.innerHTML+=`<div class="cart-item">
-    <div class="cart-row"><span>${c.name}${extra}</span><span class="price">${cartItemTotal(c)}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>
-    ${upgRow?`<div class="cart-upgrades">${upgRow}</div>`:''}
-  </div>`;
+  cart.innerHTML+=`<div class="cart-item"><div class="cart-row"><span>${c.name}${extra}</span><span class="price">${cartItemTotal(c)}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>${upgRow?`<div class="cart-upgrades">${upgRow}</div>`:''}</div>`;
 });}
 function renderMoney(){const pool=PRIORITIES[state.priority].money;
 const spent=totalSpentMoney();const c=document.getElementById('money-counter');
@@ -726,7 +727,6 @@ atkList.innerHTML=weaponLines.length?weaponLines.join(''):'<p class="hint">Не�
 const defBlock=document.getElementById('defense-block');const defSkill=state.skills.defense||0;
 let armorBonus=0,armorName='—';
 let shieldBonus=0,shieldName='—';
-let armorReinf=0,shieldReinf=0;
 state.cart.forEach(c=>{const it=findItem(c.cat,c.id);if(!it)return;
 if(c.cat==='armor'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>armorBonus){armorBonus=totalDef;armorName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
 if(c.cat==='shields'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>shieldBonus){shieldBonus=totalDef;shieldName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
@@ -743,8 +743,7 @@ magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет 
 const s=document.getElementById('stats');
 const weaponInfo=[];
 state.cart.forEach(c=>{if(isWeaponItem(c.cat)&&c.sharp>0){const it=findItem(c.cat,c.id);if(it){const d=parseDmg(it.dmg);weaponInfo.push(`${it.name}: урон ${d.v1+(c.sharp||0)}${d.v2?`(${d.v2+(c.sharp||0)})`:''}`);}}});
-const weaponLine=weaponInfo.length?`<div class="label" style="color:#5ae05a;font-size:11px;margin-top:4px">${weaponInfo.join(' · ')}</div>`:'';
-s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>${weaponLine?`<div class="stat-box"><div class="label">Заточенное оружие</div>${weaponInfo.map(w=>`<div class="value" style="font-size:13px;font-weight:normal;color:#5ae05a;margin-top:4px">${w}</div>`).join('')}</div>`:''}`;}
+s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>${weaponInfo.length?`<div class="stat-box"><div class="label">Заточенное оружие</div>${weaponInfo.map(w=>`<div class="value" style="font-size:13px;font-weight:normal;color:#5ae05a;margin-top:4px">${w}</div>`).join('')}</div>`:''}`;}
 function toggleXP(){state.xpOpen=!state.xpOpen;
 document.getElementById('xp-section').classList.toggle('hidden',!state.xpOpen);
 if(state.xpOpen){renderXP();window.scrollTo(0,document.getElementById('xp-section').offsetTop-16);}}
