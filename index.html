@@ -590,7 +590,7 @@ byCat[cat].forEach(id=>{const s=SKILLS[id];const v=state.skills[id]||0;
 const attrVal=getAttrValue(s.attr);const bonus=getSkillBonus(id);const total=v+attrVal+bonus;const attrName=getAttrLabel(s.attr);
 const bonusTag=bonus>0?` <span style="color:#5ae05a;font-size:10px">+${bonus} наследие</span>`:'';
 const cost=skillCost(v);
-list.innerHTML+=`<div class="skill-item"><span class="skill-name">${s.name} <span class="skill-total">${total}d6${bonusTag} <span style="color:#666;font-weight:normal">(${cost})</span></span>
+list.innerHTML+=`<div class="skill-item"><span class="skill-name">${s.name} <span class="skill-attr">(${attrName})</span></span><input type="number" min="0" value="${v}" onchange="setSkill('${id}',this.value)"><span class="skill-total">${total}d6${bonusTag} <span style="color:#666;font-weight:normal">(${cost})</span></span></div>`;
 let used=0;for(const k in state.skills)used+=skillCost(state.skills[k]);
 const pool=PRIORITIES[state.priority].skills;const c=document.getElementById('skill-counter');
 c.textContent=`${used} / ${pool}`;c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
