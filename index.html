@@ -219,6 +219,14 @@ qi:{name:'Ци',cat:'special',attr:'MDR'}
 };
 function getAttrValue(a){if(!a)return 0;if(Array.isArray(a))return Math.max(...a.map(x=>state.attrs[x]||1));return state.attrs[a]||1;}
 function getAttrLabel(a){if(!a)return '—';if(Array.isArray(a))return a.map(x=>ATTRS[x]).join('/');return ATTRS[a];}
+function getSorcererBonusSchool(){
+  if(state.class!=='sorcerer'||!state.sorcererOrigin) return null;
+  const map={dragon:'abjuration',demon:'evocation',fey:'enchantment',death:'necromancy',angel:'conjuration',hag:'transmutation',aberration:'illusion'};
+  return map[state.sorcererOrigin]||null;
+}
+function getSkillBonus(skillId){
+  return getSorcererBonusSchool()===skillId?1:0;
+}
 function skillCost(level){if(level<=0)return 0;let cost=0;for(let i=1;i<=level;i++){if(i<=4)cost+=1;else cost+=(i-3);}return cost;}
 function nextLevelCost(cur){return skillCost(cur+1)-skillCost(cur);}
 const MAGIC_LIST=['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'];
@@ -231,7 +239,7 @@ wizard:{name:'Волшебник',fixed:['staves','evocation','necromancy','tran
 druid:{name:'Друид',fixed:['staves','polearms','evocation','abjuration','conjuration'],info:'Орден: Дикий/Бури/Зверя/Листа.',hasDruidOrder:true},
 cleric:{name:'Жрец',fixed:[],info:'Навыки из домейнов бога.',hasGod:true},
 monk:{name:'Монах',fixed:['staves','unarmed','blades','evocation','abjuration','conjuration','qi'],info:'Ци: Железная кожа, Очищение.'},
-paladin:{name:'Паладин',fixed:['blades','blunt','unarmed','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.'},
+paladin:{name:'Паладин',fixed:['blades','blunt','unarmed','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.',hasGod:true},
 ranger:{name:'Следопыт',fixed:['bows','crossbows','blades','polearms','conjuration','transmutation','thrown'],info:'+2 против выбранного врага или в местности.',hasRangerChoice:true,hasBeast:true},
 sorcerer:{name:'Чародей',fixed:['blades','evocation','necromancy','transmutation','illusion','enchantment','abjuration','conjuration'],info:'Источник крови даёт +1 к школе.'},
 rogue:{name:'Плут',fixed:['blades','thrown','illusion','transmutation','bows'],info:'Невидимость. +3 урона из невидимости.'},
@@ -261,6 +269,7 @@ zonkuthon:{name:'Зон-Кутон (зло)',domains:['Тьма','Зло','За�
 groetus:{name:'Гротус (зло)',domains:['Хаос','Тьма','Разрушение','Смерть','Безумие'],weapon:'Тяжелый цеп'},
 milani:{name:'Милани (добро)',domains:['Добро','Освобождение','Защита'],weapon:'Моргенштерн'}
 };
+const PALADIN_GOD_KEYS=['abadar','torag','shelyn','iomedae','erastil','sarenrae','irori','milani'];
 const GOD_WEAPONS_MAP={
 abadar:['crossbow','heavyxbow','silverxbow','handxbow'],asmodeus:['heavychain'],calistria:['darts10'],
 cayden:['rapier'],desna:['starnives'],erastil:['longbow','composite','silverbow'],gorum:['greatsword'],
@@ -325,6 +334,19 @@ water:{name:'Элементаль воды',cost:1,hp:'+2хп',special:'Увел
 air:{name:'Элементаль воздуха',cost:1,hp:'+5хп',special:'Полёт'},
 storm:{name:'Грозовой элементаль',cost:1,hp:'+5хп',special:'+1 урона молнией'}
 };
+const SORCERER_ORIGINS={
+dragon:{name:'Драконье наследие',desc:'Ограждение +1. Защита от первых 2 заклинаний легче на 1.',restricted:[]},
+demon:{name:'Демоническое наследие',desc:'Воплощение +1. Можешь отрастить когти, наносящие 3 урона в ближнем бою.',restricted:['aasimar']},
+fey:{name:'Наследие фей',desc:'Очарование +1. Бесплатное заклинание Цветные брызги.',restricted:[]},
+death:{name:'Наследие смерти',desc:'Некромантия +1. Первая проверка на смерть автоматически успешна.',restricted:[]},
+angel:{name:'Наследие ангелов',desc:'Созидание +1. Бесплатное заклинание Лечение.',restricted:['tiefling']},
+hag:{name:'Наследие карги',desc:'Трансмутация +1. Снять один эффект контроля с себя, откат бой.',restricted:[]},
+aberration:{name:'Противоестественное наследие',desc:'Иллюзия +1. Тёмное зрение.',restricted:[]}
+};
+const SORCERER_FREE_SPELLS={
+fey:{school:'enchantment',text:'Цветные брызги'},
+angel:{school:'conjuration',text:'Лечение (3 хп)'}
+};
 const ENEMIES=['Гуманоиды','Великаны','Ящеры','Гоблины','Драконы','Нежить','Демоны','Аберрации','Ангелы','Феи','Животные','Призраки','Элементали'];
 const TERRAINS=['Леса','Горы','Равнины','Снега','Пустыни','Болота','Пещеры','Города'];
 const SHIELD_RESTRICTED=['alchemist','bard','wizard','druid','monk','ranger','sorcerer','rogue','magus'];
@@ -382,8 +404,20 @@ function initSelects(){
 const rs=document.getElementById('race');for(const k in RACES)rs.innerHTML+=`<option value="${k}">${RACES[k].name}</option>`;
 const cs=document.getElementById('class');for(const k in CLASSES)cs.innerHTML+=`<option value="${k}">${CLASSES[k].name}</option>`;
 const gs=document.getElementById('god');gs.innerHTML='<option value="">— выбери бога —</option>';
-for(const k in GODS)gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;}
+}
 function getMaxes(){const r=RACES[state.race];if(r.subraces&&state.subrace)return r.subraces[state.subrace].maxes;return r.maxes||{};}
+  function populateGods(){
+const gs=document.getElementById('god');
+gs.innerHTML='<option value="">— выбери бога —</option>';
+let keys=Object.keys(GODS);
+if(state.class==='paladin'){
+  keys=PALADIN_GOD_KEYS.slice();
+  if(state.race==='dwarf') keys=['torag'];
+}
+keys.forEach(k=>{gs.innerHTML+=`<option value="${k}">${GODS[k].name}</option>`;});
+if(state.god&&!keys.includes(state.god)) state.god='';
+if(gs.value!==state.god) gs.value=state.god||'';
+}
 function getAvailableSkills(){
 const c=CLASSES[state.class];let list=[...(c.fixed||[])];
 Object.keys(SKILLS).forEach(k=>{if(SKILLS[k].cat==='util'&&!list.includes(k))list.push(k);});
@@ -472,7 +506,7 @@ const arr=state.domainChoices[domain];const i=arr.indexOf(skill);
 if(i>=0)arr.splice(i,1);else if(arr.length<max)arr.push(skill);else return;render();}
 function renderSpecial(){
 const sec=document.getElementById('special-section');const cls=CLASSES[state.class];
-const has=cls.hasMagusSchools||cls.hasRangerChoice||cls.hasDruidOrder;
+const has=cls.hasMagusSchools||cls.hasRangerChoice||cls.hasDruidOrder||cls.hasSorcererOrigin;
 if(!has){sec.classList.add('hidden');return;}sec.classList.remove('hidden');let html='';
 if(cls.hasMagusSchools){
   if(!canUseMagic()){html+=`<div class="hint" style="color:#e05a5a">Магос требует доступа к магии. Выбери приоритет B.</div>`;}
@@ -502,12 +536,30 @@ html+=`<label class="radio-item"><input type="radio" name="eleform" ${!state.ele
 for(const k in ELEMENTAL_FORMS){const e=ELEMENTAL_FORMS[k];const checked=state.elementalForm===k;
 html+=`<label class="radio-item"><input type="radio" name="eleform" ${checked?'checked':''} onchange="setElementalForm('${k}')"> <b>${e.name}</b> (${e.cost}) — ${e.hp}</label>`;}
 html+=`</div>`;}}
+  if(cls.hasSorcererOrigin){
+  const chosen=state.sorcererOrigin||'';
+  html+=`<h4>Чародей — источник крови</h4>`;
+  html+=`<div class="hint">Наследие даёт +1 к одной школе и особую способность.</div>`;
+  html+=`<div class="radio-group">`;
+  for(const k in SORCERER_ORIGINS){
+    const o=SORCERER_ORIGINS[k];
+    if(o.restricted&&o.restricted.includes(state.race))continue;
+    const checked=chosen===k;
+    html+=`<label class="radio-item"><input type="radio" name="sorcererorigin" ${checked?'checked':''} onchange="setSorcererOrigin('${k}')"> <b>${o.name}</b> — ${o.desc}</label>`;
+  }
+  html+=`</div>`;
+  if(chosen&&SORCERER_ORIGINS[chosen]){
+    const o=SORCERER_ORIGINS[chosen];
+    html+=`<div class="ability"><b>${o.name}:</b> ${o.desc}</div>`;
+  }
+}
 document.getElementById('special-content').innerHTML=html;}
 function toggleMagusSchool(s){if(!state.magusSchools)state.magusSchools=[];
 const i=state.magusSchools.indexOf(s);if(i>=0)state.magusSchools.splice(i,1);
 else if(state.magusSchools.length<2)state.magusSchools.push(s);render();}
 function setRanger(v,t){state.rangerChoice=v;state.rangerType=t;render();}
 function setDruidOrder(o){state.druidOrder=o;state.wildForm='';state.elementalForm='';state.beast='';validateMagicSelection();render();}
+function setSorcererOrigin(k){state.sorcererOrigin=k;delete state.spells['free_origin'];render();save();}
 function setWildForm(k){if(!k){state.wildForm='';render();return;}const b=BEASTS[k];if(!b)return;
 const current=state.wildForm?BEASTS[state.wildForm].cost:0;const diff=b.cost-current;
 if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}state.wildForm=k;render();}
@@ -535,10 +587,10 @@ avail.forEach(id=>{if(!SKILLS[id])return;const cat=SKILLS[id].cat;(byCat[cat]=by
 for(const cat in groups){if(!byCat[cat])continue;
 list.innerHTML+=`<h3>${groups[cat]}</h3><div class="skill-group">`;
 byCat[cat].forEach(id=>{const s=SKILLS[id];const v=state.skills[id]||0;
-const attrVal=getAttrValue(s.attr);const total=v+attrVal;const attrName=getAttrLabel(s.attr);
+const attrVal=getAttrValue(s.attr);const bonus=getSkillBonus(id);const total=v+attrVal+bonus;const attrName=getAttrLabel(s.attr);
+const bonusTag=bonus>0?` <span style="color:#5ae05a;font-size:10px">+${bonus} наследие</span>`:'';
 const cost=skillCost(v);
-list.innerHTML+=`<div class="skill-item"><span class="skill-name">${s.name} <span class="skill-attr">(${attrName})</span></span><input type="number" min="0" value="${v}" onchange="setSkill('${id}',this.value)"><span class="skill-total">${total}d6 <span style="color:#666;font-weight:normal">(${cost})</span></span></div>`;});
-list.innerHTML+='</div>';}
+list.innerHTML+=`<div class="skill-item"><span class="skill-name">${s.name} <span class="skill-total">${total}d6${bonusTag} <span style="color:#666;font-weight:normal">(${cost})</span></span>
 let used=0;for(const k in state.skills)used+=skillCost(state.skills[k]);
 const pool=PRIORITIES[state.priority].skills;const c=document.getElementById('skill-counter');
 c.textContent=`${used} / ${pool}`;c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
@@ -739,9 +791,10 @@ defBlock.innerHTML=`<div class="line"><b>Защита</b> (навык): ${defSki
 const magList=document.getElementById('magic-attacks-list');const magicLines=[];
 for(const id in state.skills){const sk=SKILLS[id];
 if(!sk||sk.cat!=='magic'||!sk.attr)continue;
-const skillVal=state.skills[id];const attrVal=getAttrValue(sk.attr);const total=skillVal+attrVal;
+const skillVal=state.skills[id];const attrVal=getAttrValue(sk.attr);const bonus=getSkillBonus(id);const total=skillVal+attrVal+bonus;
 const attrLabel=getAttrLabel(sk.attr);
-magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel}) = <b style="color:#d4a95a">${total}d6</b></div>`);}
+const bonusTxt=bonus>0?` + ${bonus} (наследие)`:'';
+magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel})${bonusTxt} = <b style="color:#d4a95a">${total}d6</b></div>`);}
 magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет магических навыков.</p>';
 const s=document.getElementById('stats');
 const weaponInfo=[];
@@ -816,23 +869,20 @@ if(state.god){const g=document.getElementById('god');if(g)g.value=state.god;}
 if(state.xpOpen){document.getElementById('xp-section').classList.remove('hidden');}}
 function onRaceChange(silent){state.race=document.getElementById('race').value;
 const r=RACES[state.race];const wrap=document.getElementById('subrace-wrap');
-const sel=document.getElementById('subrace');
-if(r.subraces){wrap.classList.remove('hidden');sel.innerHTML='';
-for(const k in r.subraces)sel.innerHTML+=`<option value="${k}">${r.subraces[k].name}</option>`;
-if(!state.subrace||!r.subraces[state.subrace])state.subrace=Object.keys(r.subraces)[0];
+...
 sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
+if(state.class==='paladin'&&state.race==='dwarf') state.god='torag';
+populateGods();
 const maxes=getMaxes();
-for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
+for(const k in state.attrs){...}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function onClassChange(silent){state.class=document.getElementById('class').value;
-const wrap=document.getElementById('god-wrap');wrap.classList.toggle('hidden',state.class!=='cleric');
-if(state.class!=='cleric'){state.god='';state.domainChoices={};}
+const cls=CLASSES[state.class];const wrap=document.getElementById('god-wrap');wrap.classList.toggle('hidden',!cls.hasGod);
+if(!cls.hasGod){state.god='';state.domainChoices={};}
 if(state.class!=='magus')state.magusSchools=[];
-if(!CLASSES[state.class].hasRangerChoice){state.rangerChoice='';state.rangerType='';}
-if(state.class!=='druid'){state.druidOrder='';state.wildForm='';state.elementalForm='';}
-const canHaveBeast=state.class==='ranger'||(state.class==='druid'&&state.druidOrder==='beast');
-if(!canHaveBeast)state.beast='';
+...
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
+populateGods();
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
 function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);
