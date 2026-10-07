@@ -869,18 +869,25 @@ if(state.god){const g=document.getElementById('god');if(g)g.value=state.god;}
 if(state.xpOpen){document.getElementById('xp-section').classList.remove('hidden');}}
 function onRaceChange(silent){state.race=document.getElementById('race').value;
 const r=RACES[state.race];const wrap=document.getElementById('subrace-wrap');
-...
+const sel=document.getElementById('subrace');
+if(r.subraces){wrap.classList.remove('hidden');sel.innerHTML='';
+for(const k in r.subraces)sel.innerHTML+=`<option value="${k}">${r.subraces[k].name}</option>`;
+if(!state.subrace||!r.subraces[state.subrace])state.subrace=Object.keys(r.subraces)[0];
 sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
 if(state.class==='paladin'&&state.race==='dwarf') state.god='torag';
 populateGods();
 const maxes=getMaxes();
-for(const k in state.attrs){...}
+for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function onClassChange(silent){state.class=document.getElementById('class').value;
 const cls=CLASSES[state.class];const wrap=document.getElementById('god-wrap');wrap.classList.toggle('hidden',!cls.hasGod);
 if(!cls.hasGod){state.god='';state.domainChoices={};}
 if(state.class!=='magus')state.magusSchools=[];
-...
+if(state.class!=='magus')state.magusSchools=[];
+if(!CLASSES[state.class].hasRangerChoice){state.rangerChoice='';state.rangerType='';}
+if(state.class!=='druid'){state.druidOrder='';state.wildForm='';state.elementalForm='';}
+const canHaveBeast=state.class==='ranger'||(state.class==='druid'&&state.druidOrder==='beast');
+if(!canHaveBeast)state.beast='';
 if(!CLASSES[state.class].hasAlchemy){state.potions={};state.alchemyFire=0;}
 populateGods();
 validateMagicSelection();validateMagicAccess();if(!silent)render();}
