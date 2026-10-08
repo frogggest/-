@@ -656,7 +656,7 @@ counter.textContent=`${spentSpells} / ${pool}`;
 counter.className='counter '+(total>pool?'over':spentSpells===pool?'ok':'');
 let parts=[];if(spentSpells>0)parts.push(`заклинания: ${spentSpells}`);
 if(spentBeast>0)parts.push(`зверь/форма: ${spentBeast}`);
-let bhtml=`Пул: <b>${pool}</b> (2 + 1/2 ИНТ). Израсходовано: <b>${total}</b>`;
+let bhtml=`Пул: <b>${pool}</b> (1 + ИНТ). Израсходовано: <b>${total}</b>`;
 if(parts.length)bhtml+=` (${parts.join(', ')})`;
 if(state.purchasedSpells&&state.purchasedSpells.length)bhtml+=` | Куплено за опыт: ${state.purchasedSpells.length}`;
 if(total>pool)bhtml+=` <span style="color:#e05a5a">— перерасход!</span>`;banner.innerHTML=bhtml;
