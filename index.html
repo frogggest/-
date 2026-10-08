@@ -222,7 +222,7 @@ function getSorcererBonusSchool(){
 function getSkillBonus(skillId){
   return getSorcererBonusSchool()===skillId?1:0;
 }
-ffunction skillCost(level,id){if(level<=0)return 0;if(id==='qi')return level;let cost=0;for(let i=1;i<=level;i++){if(i<=4)cost+=1;else cost+=(i-3);}return cost;}
+function skillCost(level,id){if(level<=0)return 0;if(id==='qi')return level;let cost=0;for(let i=1;i<=level;i++){if(i<=4)cost+=1;else cost+=(i-3);}return cost;}
 function nextLevelCost(cur,id){return skillCost(cur+1,id)-skillCost(cur,id);}
 const MAGIC_LIST=['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'];
 const CLASSES={
