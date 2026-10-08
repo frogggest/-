@@ -924,20 +924,29 @@ magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) +
 magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет магических навыков.</p>';
 const s=document.getElementById('stats');
 const weaponInfo=[];
-const pair=findDualPair();
+const hasDual=!!state.skills.dualwield&&state.skills.dualwield>0;
+const pair=hasDual?findDualPair():null;
 const pairedIds=pair?new Set([pair[0],pair[1]]):null;
+const skip=new Set();
 state.cart.forEach(c=>{
   if(!isWeaponItem(c.cat))return;
+  if(skip.has(c))return;
   const it=findItem(c.cat,c.id);if(!it)return;
   const d=typeof it.dmg==='number'?{v1:it.dmg,v2:it.dmg2||null}:parseDmg(it.dmg);
   const enh=(c.sharp||0);
-  let singleDmg=d.v1+enh;
-  let txt=`${it.name}: урон ${singleDmg}${d.v2?`(${d.v2+enh})`:''}`;
+  const singleDmg=d.v1+enh;
   if(pairedIds&&pairedIds.has(c)){
-    const total=singleDmg*2;
-    txt=`${it.name} (парное): урон ${total}`;
+    const partner=pair[0]===c?pair[1]:pair[0];
+    const pi=findItem(partner.cat,partner.id);
+    const pd=typeof pi.dmg==='number'?{v1:pi.dmg,v2:pi.dmg2||null}:parseDmg(pi.dmg);
+    const penh=(partner.sharp||0);
+    const totalDmg=singleDmg+(pd.v1+penh);
+    weaponInfo.push(`${it.name} (парное): урон ${totalDmg}`);
+    skip.add(partner);
+  }else{
+    const txt=`${it.name}: урон ${singleDmg}${d.v2?`(${d.v2+enh})`:''}`;
+    if(c.sharp>0)weaponInfo.push(txt);
   }
-  if(c.sharp>0||(pairedIds&&pairedIds.has(c)))weaponInfo.push(txt);
 });
 s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>${weaponInfo.length?`<div class="stat-box"><div class="label">Заточенное оружие</div>${weaponInfo.map(w=>`<div class="value" style="font-size:13px;font-weight:normal;color:#5ae05a;margin-top:4px">${w}</div>`).join('')}</div>`:''}`;}
 function toggleXP(){state.xpOpen=!state.xpOpen;
