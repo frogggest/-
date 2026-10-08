@@ -222,8 +222,8 @@ function getSorcererBonusSchool(){
 function getSkillBonus(skillId){
   return getSorcererBonusSchool()===skillId?1:0;
 }
-function skillCost(level){if(level<=0)return 0;let cost=0;for(let i=1;i<=level;i++){if(i<=4)cost+=1;else cost+=(i-3);}return cost;}
-function nextLevelCost(cur){return skillCost(cur+1)-skillCost(cur);}
+ffunction skillCost(level,id){if(level<=0)return 0;if(id==='qi')return level;let cost=0;for(let i=1;i<=level;i++){if(i<=4)cost+=1;else cost+=(i-3);}return cost;}
+function nextLevelCost(cur,id){return skillCost(cur+1,id)-skillCost(cur,id);}
 const MAGIC_LIST=['evocation','necromancy','transmutation','illusion','enchantment','divination','abjuration','conjuration'];
 const CLASSES={
 alchemist:{name:'Алхимик',fixed:['blades','blunt','thrown','transmutation','crossbows'],info:'Зелья: ИНТ/2+1 за элемент набора.',hasAlchemy:true},
@@ -632,12 +632,12 @@ for(const cat in groups){
     const s=SKILLS[id];const v=state.skills[id]||0;
     const attrVal=getAttrValue(s.attr);const bonus=getSkillBonus(id);const total=v+attrVal+bonus;const attrName=getAttrLabel(s.attr);
     const bonusTag=bonus>0?` <span style="color:#5ae05a;font-size:10px">+${bonus} наследие</span>`:'';
-    const cost=skillCost(v);
+    const cost=skillCost(v,id);
     list.innerHTML+=`<div class="skill-item"><span class="skill-name">${s.name} <span class="skill-attr">(${attrName})</span></span><input type="number" min="0" value="${v}" onchange="setSkill('${id}',this.value)"><span class="skill-total">${total}d6${bonusTag} <span style="color:#666;font-weight:normal">(${cost})</span></span></div>`;
   });
   list.innerHTML+='</div>';
 }
-let used=0;for(const k in state.skills)used+=skillCost(state.skills[k]);
+let used=0;for(const k in state.skills)used+=skillCost(state.skills[k],k);
 const pool=PRIORITIES[state.priority].skills;const c=document.getElementById('skill-counter');
 c.textContent=`${used} / ${pool}`;c.className='counter '+(used>pool?'over':used===pool?'ok':'');}
 function setSkill(id,v){
@@ -968,7 +968,7 @@ inp.value=3;
 renderXP();save();}
 function buySkillUpgrade(id){
 const cur=state.skills[id]||0;
-const cost=nextLevelCost(cur);
+const cost=nextLevelCost(cur,id);
 if(cost>xpAvail()){alert('Не хватает опыта. Нужно: '+cost+', есть: '+xpAvail());return;}
 state.skills[id]=cur+1;
 state.xpSpent+=cost;
