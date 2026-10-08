@@ -104,12 +104,7 @@ button.small{padding:3px 8px;font-size:11px}
 <label id="subrace-wrap" class="hidden">Подраса <select id="subrace"></select></label>
 <label>Класс <select id="class"></select></label>
 <label id="god-wrap" class="hidden">Бог <select id="god"></select></label>
-<label>Приоритет <select id="priority">
-<option value="A">A — 15 атр / 14 нав / 40 мон</option>
-<option value="B">B — 14 атр / 12 нав / 70 мон (магия/Ци)</option>
-<option value="C">C — 12 атр / 10 нав / 150 мон</option>
-<option value="D">D — 10 атр / 8 нав / 270 мон</option>
-</select></label>
+<label>Приоритет <select id="priority"></select></label>
 </div>
 <div id="race-ability" class="ability"></div>
 <div id="class-info" class="ability"></div>
@@ -406,6 +401,32 @@ const cs=document.getElementById('class');for(const k in CLASSES)cs.innerHTML+=`
 const gs=document.getElementById('god');gs.innerHTML='<option value="">— выбери бога —</option>';
 }
 function getMaxes(){const r=RACES[state.race];if(r.subraces&&state.subrace)return r.subraces[state.subrace].maxes;return r.maxes||{};}
+function isPriorityAvailable(p){
+  if(p==='C' && (state.race==='tiefling' || state.race==='halforc')) return false;
+  if(p==='D' && state.race!=='human' && state.race!=='halfelf') return false;
+  return true;
+}
+const PRIORITY_LABELS={
+  A:'A — 15 атр / 14 нав / 40 мон',
+  B:'B — 14 атр / 12 нав / 70 мон (магия/Ци)',
+  C:'C — 12 атр / 10 нав / 150 мон',
+  D:'D — 10 атр / 8 нав / 270 мон'
+};
+function updatePriorityOptions(){
+  const sel=document.getElementById('priority');
+  if(!sel) return;
+  const prev=sel.value||state.priority;
+  let html='';
+  ['A','B','C','D'].forEach(p=>{
+    if(!isPriorityAvailable(p)) return;
+    html+=`<option value="${p}">${PRIORITY_LABELS[p]}</option>`;
+  });
+  sel.innerHTML=html;
+  if(!isPriorityAvailable(state.priority)){
+    state.priority='A';
+  }
+  sel.value=state.priority;
+}
 function populateGods(){
 const gs=document.getElementById('god');
 gs.innerHTML='<option value="">— выбери бога —</option>';
@@ -872,13 +893,16 @@ const purch=document.getElementById('xp-purchased');
 purch.innerHTML=state.purchasedSpells.length?state.purchasedSpells.map(p=>`<div>${SPELLS[p.school].name}: ${p.text}</div>`).join(''):'<p class="hint">Нет купленных заклинаний.</p>';}
 function collect(){state.name=document.getElementById('name').value;
 state.gender=document.getElementById('gender').value;
-state.priority=document.getElementById('priority').value;
+const pv=document.getElementById('priority').value;
+if(pv && isPriorityAvailable(pv)) state.priority=pv;
 const g=document.getElementById('god');if(g)state.god=g.value;
 const sr=document.getElementById('subrace');
 if(sr&&!document.getElementById('subrace-wrap').classList.contains('hidden'))state.subrace=sr.value;}
 function applyState(){document.getElementById('name').value=state.name||'';
 document.getElementById('gender').value=state.gender||'';
-document.getElementById('race').value=state.race;onRaceChange(true);
+document.getElementById('race').value=state.race;
+updatePriorityOptions();
+onRaceChange(true);
 document.getElementById('class').value=state.class;onClassChange(true);
 document.getElementById('priority').value=state.priority;
 if(state.subrace){const sr=document.getElementById('subrace');if(sr)sr.value=state.subrace;}
@@ -892,6 +916,7 @@ for(const k in r.subraces)sel.innerHTML+=`<option value="${k}">${r.subraces[k].n
 if(!state.subrace||!r.subraces[state.subrace])state.subrace=Object.keys(r.subraces)[0];
 sel.value=state.subrace;}else{wrap.classList.add('hidden');state.subrace='';}
 if(state.class==='paladin'&&state.race==='dwarf') state.god='torag';
+updatePriorityOptions();
 populateGods();
 const maxes=getMaxes();
 for(const k in state.attrs){if(state.attrs[k]>(maxes[k]||6))state.attrs[k]=maxes[k]||6;}
