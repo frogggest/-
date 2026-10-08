@@ -202,7 +202,7 @@ blades:{name:'Клинки',cat:'weapon',attr:['SIL','LVK']},blunt:{name:'Дро
 axes:{name:'Топоры',cat:'weapon',attr:'SIL'},unarmed:{name:'Безоружный бой',cat:'weapon',attr:['SIL','LVK']},
 staves:{name:'Посохи',cat:'weapon',attr:'LVK'},thrown:{name:'Метательное',cat:'weapon',attr:'LVK'},
 polearms:{name:'Древковое',cat:'weapon',attr:'LVK'},bows:{name:'Луки',cat:'weapon',attr:'LVK'},
-crossbows:{name:'Арбалеты',cat:'weapon',attr:'LVK'},dualwield:{name:'Парное оружие',cat:'weapon',attr:'LVK'},
+crossbows:{name:'Арбалеты',cat:'weapon',attr:'LVK'},dualwield:{name:'Парное оружие',cat:'weapon',attr:['SIL','LVK']},
 evocation:{name:'Воплощение',cat:'magic',attr:'INT'},necromancy:{name:'Некромантия',cat:'magic',attr:'MDR'},
 transmutation:{name:'Трансмутация',cat:'magic',attr:'INT'},illusion:{name:'Иллюзия',cat:'magic',attr:'INT'},
 enchantment:{name:'Очарование',cat:'magic',attr:'HAR'},divination:{name:'Прорицание',cat:'magic',attr:'MDR'},
@@ -348,26 +348,41 @@ const SHIELD_RESTRICTED=['alchemist','bard','wizard','druid','monk','ranger','so
 const EQUIPMENT={
 melee:{name:'Оружие ближнего боя',items:[
 {id:'dagger',name:'Кинжал',price:5,dmg:2},{id:'shortsword',name:'Короткий меч',price:10,dmg:3},
-{id:'longsword',name:'Длинный меч',price:20,dmg:'5(6)'},{id:'silversword',name:'Серебряный меч',price:45,dmg:4},
-{id:'scimitar',name:'Скимитар',price:26,dmg:4},{id:'greatsword',name:'Двуручный меч',price:50,dmg:8},
-{id:'dueling',name:'Дуэльный меч',price:22,dmg:'4(5)'},{id:'falchion',name:'Фальшион',price:15,dmg:3,cheapSharp:true},
+{id:'longsword',name:'Длинный меч',price:20,price2:24,dmg:5,dmg2:6,canTwo:true},
+{id:'silversword',name:'Серебряный меч',price:45,price2:49,dmg:4,dmg2:5,canTwo:true},
+{id:'scimitar',name:'Скимитар',price:26,dmg:4},
+{id:'greatsword',name:'Двуручный меч',price:50,dmg:8,two:true},
+{id:'dueling',name:'Дуэльный меч',price:22,price2:26,dmg:4,dmg2:5,canTwo:true},
+{id:'falchion',name:'Фальшион',price:15,dmg:3,cheapSharp:true},
 {id:'rapier',name:'Рапира',price:80,dmg:'6(7)'},{id:'club',name:'Дубинка',price:6,dmg:2},
 {id:'hammer',name:'Молоток',price:10,dmg:3},{id:'pick',name:'Клевец',price:26,dmg:3},
-{id:'warhammer',name:'Боевой молот',price:35,dmg:8},{id:'chain',name:'Цеп',price:20,dmg:4},
-{id:'heavychain',name:'Тяжелый цеп',price:30,dmg:6},{id:'silverchain',name:'Серебряный кистень',price:15,dmg:4},
+{id:'warhammer',name:'Боевой молот',price:35,dmg:8,two:true},
+{id:'chain',name:'Цеп',price:20,dmg:4},
+{id:'heavychain',name:'Тяжелый цеп',price:30,dmg:6,two:true},
+{id:'silverchain',name:'Серебряный кистень',price:15,dmg:4},
 {id:'cleaver',name:'Тесак',price:5,dmg:3},{id:'handaxe',name:'Топорик',price:11,dmg:4},
-{id:'greataxe',name:'Секира',price:30,dmg:7},{id:'labrys',name:'Лабрис',price:35,dmg:8},
-{id:'silveraxe',name:'Серебряный топор',price:25,dmg:4},{id:'quarterstaff',name:'Дорожный посох',price:9,dmg:3},
-{id:'steelstaff',name:'Стальной посох',price:15,dmg:4},{id:'fists',name:'Кулаки',price:0,dmg:1,noSharp:true},
+{id:'greataxe',name:'Секира',price:30,dmg:7,two:true},
+{id:'labrys',name:'Лабрис',price:35,price2:39,dmg:8,dmg2:9,canTwo:true},
+{id:'silveraxe',name:'Серебряный топор',price:25,price2:29,dmg:4,dmg2:5,canTwo:true},
+{id:'quarterstaff',name:'Дорожный посох',price:9,dmg:3,two:true,noStr:true},
+{id:'steelstaff',name:'Стальной посох',price:15,dmg:4,two:true,noStr:true},
+{id:'fists',name:'Кулаки',price:0,dmg:1,noSharp:true},
 {id:'gloves',name:'Тяжелые перчатки',price:10,dmg:2},{id:'cestus',name:'Кастеты',price:20,dmg:3},
-{id:'spikedcestus',name:'Шипованные кастеты',price:35,dmg:5},{id:'trident',name:'Трезубец',price:20,dmg:5},
-{id:'spear',name:'Копьё',price:15,dmg:5},{id:'glaive',name:'Глефа',price:30,dmg:6},
-{id:'scythe',name:'Коса',price:25,dmg:6},{id:'morgenstern',name:'Моргенштерн',price:30,dmg:6}]},
+{id:'spikedcestus',name:'Шипованные кастеты',price:35,dmg:5},
+{id:'trident',name:'Трезубец',price:20,dmg:5,two:true,noStr:true},
+{id:'spear',name:'Копьё',price:15,dmg:5,two:true,noStr:true},
+{id:'glaive',name:'Глефа',price:30,dmg:6,two:true,noStr:true},
+{id:'scythe',name:'Коса',price:25,dmg:6,two:true,noStr:true},
+{id:'morgenstern',name:'Моргенштерн',price:30,dmg:6}]},
 ranged:{name:'Оружие дальнего боя',items:[
-{id:'shortbow',name:'Короткий лук',price:10,dmg:2},{id:'longbow',name:'Длинный лук',price:20,dmg:4},
-{id:'silverbow',name:'Серебряный лук',price:35,dmg:3},{id:'composite',name:'Композитный лук',price:45,dmg:7},
-{id:'handxbow',name:'Карманный арбалет',price:15,dmg:2},{id:'crossbow',name:'Арбалет',price:20,dmg:4},
-{id:'heavyxbow',name:'Укрепленный арбалет',price:40,dmg:5},{id:'silverxbow',name:'Серебряный арбалет',price:45,dmg:3},
+{id:'shortbow',name:'Короткий лук',price:10,dmg:2,two:true,noStr:true},
+{id:'longbow',name:'Длинный лук',price:20,dmg:4,two:true,noStr:true},
+{id:'silverbow',name:'Серебряный лук',price:35,dmg:3,two:true,noStr:true},
+{id:'composite',name:'Композитный лук',price:45,dmg:7,two:true,noStr:true},
+{id:'handxbow',name:'Карманный арбалет',price:15,dmg:2,two:true,noStr:true},
+{id:'crossbow',name:'Арбалет',price:20,dmg:4,two:true,noStr:true},
+{id:'heavyxbow',name:'Укрепленный арбалет',price:40,dmg:5,two:true,noStr:true},
+{id:'silverxbow',name:'Серебряный арбалет',price:45,dmg:3,two:true,noStr:true},
 {id:'knives10',name:'Ножички (10)',price:10,dmg:2},{id:'axes10',name:'Топорики (10)',price:15,dmg:3},
 {id:'darts10',name:'Дротики (10)',price:15,dmg:3},{id:'silverknives',name:'Серебряные ножички',price:30,dmg:2},
 {id:'starnives',name:'Нож-звезда',price:45,dmg:4},{id:'boomerang',name:'Бумеранг',price:30,dmg:4}]},
@@ -476,11 +491,13 @@ function findItem(cat,id){return EQUIPMENT[cat].items.find(i=>i.id===id);}
 function canBeSharpened(c){const it=findItem(c.cat,c.id);return it&&!it.noSharp;}
 function sharpCost(price,level,cheap){if(cheap)return level*price;return (level+1)*price;}
 function cartItemTotal(c){
-  let total=c.price;
   const it=findItem(c.cat,c.id);
+  const useTwo=it&&(it.two||(it.canTwo&&c.twoHanded));
+  const basePrice=useTwo&&it.price2?it.price2:c.price;
+  let total=basePrice;
   const cheap=it&&it.cheapSharp;
-  if(c.sharp)for(let i=1;i<=c.sharp;i++)total+=sharpCost(c.price,i,cheap);
-  if(c.reinf)for(let i=1;i<=c.reinf;i++)total+=sharpCost(c.price,i,false);
+  if(c.sharp)for(let i=1;i<=c.sharp;i++)total+=sharpCost(basePrice,i,cheap);
+  if(c.reinf)for(let i=1;i<=c.reinf;i++)total+=sharpCost(basePrice,i,false);
   return total;
 }
 function cartTotal(){return state.cart.reduce((s,c)=>s+cartItemTotal(c),0);}
@@ -744,15 +761,28 @@ for(const catKey in EQUIPMENT){const cat=EQUIPMENT[catKey];const isWeapon=isWeap
 let html=`<details class="shop-cat"><summary>${cat.name}</summary>`;
 cat.items.forEach(it=>{const blocked=isBlocked(it,catKey);const price=it.price;
 const noteHtml=(!isWeapon&&it.note)?` <span class="restricted">(${it.note})</span>`:'';
-html+=`<div class="shop-item"><span>${it.name}${it.dmg!==undefined?` — урон ${it.dmg}`:''}${it.def!==undefined?` — защита ${it.def}`:''}${noteHtml}</span><span class="price">${price}м</span><span>${blocked?'<span class="restricted">недоступно</span>':`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`}</span></div>`;});
+const dmgs=it.dmg!==undefined?(it.dmg2!==undefined?`${it.dmg}(${it.dmg2})`:it.dmg):null;
+const prices=it.price2!==undefined?`${it.price}(${it.price2})`:it.price;
+const tags=[];if(it.two)tags.push(it.noStr?'двуручное (без СИЛ)':'двуручное');if(it.canTwo)tags.push('может быть двуручным');
+const tagStr=tags.length?` <span class="restricted">(${tags.join(', ')})</span>`:'';
+html+=`<div class="shop-item"><span>${it.name}${dmgs!==null?` — урон ${dmgs}`:''}${it.def!==undefined?` — защита ${it.def}`:''}${tagStr}${noteHtml}</span><span class="price">${prices}м</span><span>${blocked?'<span class="restricted">недоступно</span>':`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`}</span></div>`;
+});
 html+=`</details>`;shop.innerHTML+=html;}}
 function isBlocked(item,catKey){
+const isRangedTwo=item.two&&(catKey==='ranged');
+const isRogueAllowed=state.class==='rogue'&&isRangedTwo;
+if(item.two&&!isRogueAllowed&&(state.class==='rogue'||state.class==='magus'))return true;
 if(item.only&&!item.only.includes(state.class))return true;
 if(item.restricted&&item.restricted.includes(state.class))return true;
 if(state.class==='cleric'&&(catKey==='melee'||catKey==='ranged')){
 if(!state.god)return true;const allowed=GOD_WEAPONS_MAP[state.god]||[];
 if(!allowed.includes(item.id))return true;}return false;}
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
+if(cat==='shields'){
+  const hasTwo=state.cart.some(c=>{const it=findItem(c.cat,c.id);return it&&(it.two||(it.canTwo&&c.twoHanded));});
+  if(hasTwo){alert('Нельзя купить щит с двуручным оружием.');return;}
+  if(findDualPair()){alert('Нельзя купить щит с парным оружием.');return;}
+}
 const pool=PRIORITIES[state.priority].money;
 if(totalSpentMoney()+item.price>pool){alert('Не хватает золота.');return;}
 state.cart.push({cat,id,name:item.name,price:item.price,sharp:0,reinf:0});render();save();}
@@ -777,6 +807,34 @@ if(totalSpentMoney()+cost>pool){alert('Не хватает денег. Нужн�
 c.reinf++;render();save();}
 function reduceSharpen(i){const c=state.cart[i];if(!c||!c.sharp)return;c.sharp--;render();save();}
 function reduceReinf(i){const c=state.cart[i];if(!c||!c.reinf)return;c.reinf--;render();save();}
+function findDualPair(){
+  const weapons=state.cart.filter(c=>{
+    if(!isWeaponItem(c.cat))return false;
+    const it=findItem(c.cat,c.id);
+    return it&&!it.two;
+  });
+  for(let i=0;i<weapons.length;i++){
+    for(let j=i+1;j<weapons.length;j++){
+      if(weapons[i].id===weapons[j].id&&weapons[i].cat===weapons[j].cat)return [weapons[i],weapons[j]];
+    }
+  }
+  return null;
+}
+function toggleTwoHanded(i){
+  const c=state.cart[i];if(!c)return;
+  const it=findItem(c.cat,c.id);if(!it||!it.canTwo)return;
+  if(state.class==='rogue'||state.class==='magus')return;
+  if(!c.twoHanded){
+    const pair=findDualPair();
+    if(pair&&!pair.includes(c)){alert('Нельзя двуручный хват с парным оружием.');return;}
+  }
+  c.twoHanded=!c.twoHanded;
+  if(c.twoHanded){
+    const hasShield=state.cart.some((x,xi)=>xi!==i&&x.cat==='shields');
+    if(hasShield){alert('Нельзя двуручный хват со щитом.');c.twoHanded=false;render();return;}
+  }
+  render();save();
+}
 function renderCart(){
 const cart=document.getElementById('cart');
 if(!state.cart.length){cart.innerHTML='<p class="hint">Пусто.</p>';return;}
@@ -789,16 +847,32 @@ state.cart.forEach((c,i)=>{
   if(isWeaponItem(c.cat)&&c.sharp>0)extra+=` <span class="upg-tag">+${c.sharp} заточка</span>`;
   if(isArmorItem(c.cat)&&c.reinf>0)extra+=` <span class="upg-tag">+${c.reinf} укрепление</span>`;
   let upgRow='';
-  if(isWeaponItem(c.cat)&&sharpenable){
-    const nextCost=sharpCost(c.price,c.sharp+1,cheap);
-    upgRow+=`<button onclick="sharpenItem(${i})" ${c.sharp>=3?'disabled':''}>Заточить (+${nextCost})</button>`;
-    if(c.sharp>0)upgRow+=`<button onclick="reduceSharpen(${i})">−</button>`;
+const item=findItem(c.cat,c.id);
+if(item&&item.canTwo){
+  const isRM=(state.class==='rogue'||state.class==='magus');
+  const twoOn=c.twoHanded;
+  const strOk=(state.attrs.SIL||1)>=5;
+  if(isRM){
+    upgRow+=`<span class="restricted">Двуручный хват запрещён классу</span>`;
+  }else{
+    upgRow+=`<button onclick="toggleTwoHanded(${i})">${twoOn?'Двуручный хват ✓':'Двуручный хват'}</button>`;
+    if(twoOn&&!strOk)upgRow+=`<span style="color:#e05a5a">−2 куба (СИЛ&lt;5)</span>`;
   }
-  if(isArmorItem(c.cat)){
-    const nextCost=sharpCost(c.price,c.reinf+1,false);
-    upgRow+=`<button onclick="reinforceItem(${i})" ${c.reinf>=2?'disabled':''}>Укрепить (+${nextCost})</button>`;
-    if(c.reinf>0)upgRow+=`<button onclick="reduceReinf(${i})">−</button>`;
-  }
+}
+if(item&&item.two&&!item.noStr){
+  const strOk=(state.attrs.SIL||1)>=5;
+  if(!strOk)upgRow+=`<span style="color:#e05a5a">Двуручное: −2 куба (СИЛ&lt;5)</span>`;
+}
+if(isWeaponItem(c.cat)&&sharpenable){
+  const nextCost=sharpCost(cartItemTotal(c),c.sharp+1,cheap);
+  upgRow+=`<button onclick="sharpenItem(${i})" ${c.sharp>=3?'disabled':''}>Заточить (+${nextCost})</button>`;
+  if(c.sharp>0)upgRow+=`<button onclick="reduceSharpen(${i})">−</button>`;
+}
+if(isArmorItem(c.cat)){
+  const nextCost=sharpCost(c.price,c.reinf+1,false);
+  upgRow+=`<button onclick="reinforceItem(${i})" ${c.reinf>=2?'disabled':''}>Укрепить (+${nextCost})</button>`;
+  if(c.reinf>0)upgRow+=`<button onclick="reduceReinf(${i})">−</button>`;
+}
   cart.innerHTML+=`<div class="cart-item"><div class="cart-row"><span>${c.name}${extra}</span><span class="price">${cartItemTotal(c)}м</span><button class="small danger" onclick="removeFromCart(${i})">×</button></div>${upgRow?`<div class="cart-upgrades">${upgRow}</div>`:''}</div>`;
 });}
 function renderMoney(){const pool=PRIORITIES[state.priority].money;
@@ -817,11 +891,19 @@ function parseDmg(v){if(typeof v==='number')return{v1:v,v2:null};const m=String(
 function renderStats(){
 const hp=14+(state.attrs.TEL||1);const pool=getMagicPool();const spent=getTotalSpent();
 const atkList=document.getElementById('attacks-list');const weaponLines=[];
+const strOk=(state.attrs.SIL||1)>=5;
+const isRM=(state.class==='rogue'||state.class==='magus');
+const twoUsed=state.cart.some(c=>{
+  const it=findItem(c.cat,c.id);
+  return it&&!it.noStr&&(it.two||(it.canTwo&&c.twoHanded));
+});
+const twoPenalty=(twoUsed&&!strOk&&!isRM)?2:0;
 for(const id in state.skills){const sk=SKILLS[id];
 if(!sk||sk.cat!=='weapon'||!sk.attr)continue;
-const skillVal=state.skills[id];const attrVal=getAttrValue(sk.attr);const total=skillVal+attrVal;
+const skillVal=state.skills[id];const attrVal=getAttrValue(sk.attr);const total=Math.max(0,skillVal+attrVal-twoPenalty);
 const attrLabel=getAttrLabel(sk.attr);
-weaponLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel}) = <b style="color:#d4a95a">${total}d6</b></div>`);}
+const penTag=twoPenalty>0?` <span style="color:#e05a5a">−2 (двуручное, СИЛ&lt;5)</span>`:'';
+weaponLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) + ${attrVal} (${attrLabel})${penTag} = <b style="color:#d4a95a">${total}d6</b></div>`);}
 atkList.innerHTML=weaponLines.length?weaponLines.join(''):'<p class="hint">Нет оружейных навыков.</p>';
 const defBlock=document.getElementById('defense-block');const defSkill=state.skills.defense||0;
 let armorBonus=0,armorName='—';
@@ -842,7 +924,21 @@ magicLines.push(`<div class="line"><b>${sk.name}</b>: ${skillVal} (навык) +
 magList.innerHTML=magicLines.length?magicLines.join(''):'<p class="hint">Нет магических навыков.</p>';
 const s=document.getElementById('stats');
 const weaponInfo=[];
-state.cart.forEach(c=>{if(isWeaponItem(c.cat)&&c.sharp>0){const it=findItem(c.cat,c.id);if(it){const d=parseDmg(it.dmg);weaponInfo.push(`${it.name}: урон ${d.v1+(c.sharp||0)}${d.v2?`(${d.v2+(c.sharp||0)})`:''}`);}}});
+const pair=findDualPair();
+const pairedIds=pair?new Set([pair[0],pair[1]]):null;
+state.cart.forEach(c=>{
+  if(!isWeaponItem(c.cat))return;
+  const it=findItem(c.cat,c.id);if(!it)return;
+  const d=typeof it.dmg==='number'?{v1:it.dmg,v2:it.dmg2||null}:parseDmg(it.dmg);
+  const enh=(c.sharp||0);
+  let singleDmg=d.v1+enh;
+  let txt=`${it.name}: урон ${singleDmg}${d.v2?`(${d.v2+enh})`:''}`;
+  if(pairedIds&&pairedIds.has(c)){
+    const total=singleDmg*2;
+    txt=`${it.name} (парное): урон ${total}`;
+  }
+  if(c.sharp>0||(pairedIds&&pairedIds.has(c)))weaponInfo.push(txt);
+});
 s.innerHTML=`<div class="stat-box"><div class="label">HP</div><div class="value">${hp}</div></div><div class="stat-box"><div class="label">Очки магии/зверей</div><div class="value">${spent}/${pool}</div><div class="label">общий пул</div></div>${weaponInfo.length?`<div class="stat-box"><div class="label">Заточенное оружие</div>${weaponInfo.map(w=>`<div class="value" style="font-size:13px;font-weight:normal;color:#5ae05a;margin-top:4px">${w}</div>`).join('')}</div>`:''}`;}
 function toggleXP(){state.xpOpen=!state.xpOpen;
 document.getElementById('xp-section').classList.toggle('hidden',!state.xpOpen);
@@ -942,13 +1038,13 @@ validateMagicSelection();validateMagicAccess();if(!silent)render();}
 function save(){collect();localStorage.setItem('pf_char',JSON.stringify(state));}
 function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет сохранений.');return;}state=JSON.parse(raw);
 if(!state.spellEnhance)state.spellEnhance={};
-if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;});}
+if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;if(c.twoHanded===undefined)c.twoHanded=false;});}
 applyState();render();}
 function reset(){if(!confirm('Сбросить?'))return;localStorage.removeItem('pf_char');location.reload();}
 function exportJSON(){collect();const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(state.name||'char')+'.json';a.click();}
 function importJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{try{state=JSON.parse(ev.target.result);
 if(!state.spellEnhance)state.spellEnhance={};
-if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;});}
+if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;if(c.twoHanded===undefined)c.twoHanded=false;});}
 applyState();render();}catch{alert('Ошибка чтения.');}};r.readAsText(f);};inp.click();}
 initSelects();
 document.getElementById('race').addEventListener('change',()=>onRaceChange());
