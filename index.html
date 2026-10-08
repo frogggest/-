@@ -366,9 +366,9 @@ melee:{name:'Оружие ближнего боя',items:[
 {id:'silveraxe',name:'Серебряный топор',price:25,price2:29,dmg:4,dmg2:5,canTwo:true},
 {id:'quarterstaff',name:'Дорожный посох',price:9,dmg:3,two:true,noStr:true},
 {id:'steelstaff',name:'Стальной посох',price:15,dmg:4,two:true,noStr:true},
-{id:'fists',name:'Кулаки',price:0,dmg:1,noSharp:true},
-{id:'gloves',name:'Тяжелые перчатки',price:10,dmg:2},{id:'cestus',name:'Кастеты',price:20,dmg:3},
-{id:'spikedcestus',name:'Шипованные кастеты',price:35,dmg:5},
+{id:'fists',name:'Кулаки',price:0,dmg:1,noSharp:true,noDual:true},
+{id:'gloves',name:'Тяжелые перчатки',price:10,dmg:2,noDual:true},{id:'cestus',name:'Кастеты',price:20,dmg:3,noDual:true},
+{id:'spikedcestus',name:'Шипованные кастеты',price:35,dmg:5,noDual:true},
 {id:'trident',name:'Трезубец',price:20,dmg:5,two:true,noStr:true},
 {id:'spear',name:'Копьё',price:15,dmg:5,two:true,noStr:true},
 {id:'glaive',name:'Глефа',price:30,dmg:6,two:true,noStr:true},
@@ -811,7 +811,12 @@ function findDualPair(){
   const weapons=state.cart.filter(c=>{
     if(!isWeaponItem(c.cat))return false;
     const it=findItem(c.cat,c.id);
-    return it&&!it.two;
+    if(!it)return false;
+    if(it.two)return false;
+    if(it.noDual)return false;
+    const baseDmg=typeof it.dmg==='number'?it.dmg:parseInt(String(it.dmg));
+    if(!(baseDmg>=1&&baseDmg<=3))return false;
+    return true;
   });
   for(let i=0;i<weapons.length;i++){
     for(let j=i+1;j<weapons.length;j++){
@@ -912,8 +917,10 @@ state.cart.forEach(c=>{const it=findItem(c.cat,c.id);if(!it)return;
 if(c.cat==='armor'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>armorBonus){armorBonus=totalDef;armorName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
 if(c.cat==='shields'){const totalDef=(it.def||0)+(c.reinf||0);if(totalDef>shieldBonus){shieldBonus=totalDef;shieldName=it.name+(c.reinf?` (+${c.reinf})`:'');}}
 });
-const defTotal=defSkill+armorBonus+shieldBonus;
-defBlock.innerHTML=`<div class="line"><b>Защита</b> (навык): ${defSkill}</div><div class="line"><b>Броня</b> (${armorName}): +${armorBonus}</div><div class="line"><b>Щит</b> (${shieldName}): +${shieldBonus}</div><div class="line total">Итого: <b style="color:#d4a95a;font-size:18px">${defTotal}d6</b></div>`;
+const dualPenalty=(state.skills.dualwield>0&&findDualPair())?2:0;
+const defTotal=Math.max(0,defSkill+armorBonus+shieldBonus-dualPenalty);
+const dualTag=dualPenalty>0?`<div class="line" style="color:#e05a5a">Парное оружие: −${dualPenalty}</div>`:'';
+defBlock.innerHTML=`<div class="line"><b>Защита</b> (навык): ${defSkill}</div><div class="line"><b>Броня</b> (${armorName}): +${armorBonus}</div><div class="line"><b>Щит</b> (${shieldName}): +${shieldBonus}</div>${dualTag}<div class="line total">Итого: <b style="color:#d4a95a;font-size:18px">${defTotal}d6</b></div>`;
 const magList=document.getElementById('magic-attacks-list');const magicLines=[];
 for(const id in state.skills){const sk=SKILLS[id];
 if(!sk||sk.cat!=='magic'||!sk.attr)continue;
@@ -940,8 +947,8 @@ state.cart.forEach(c=>{
     const pi=findItem(partner.cat,partner.id);
     const pd=typeof pi.dmg==='number'?{v1:pi.dmg,v2:pi.dmg2||null}:parseDmg(pi.dmg);
     const penh=(partner.sharp||0);
-    const totalDmg=singleDmg+(pd.v1+penh);
-    weaponInfo.push(`${it.name} (парное): урон ${totalDmg}`);
+    const totalDmg=(singleDmg+(pd.v1+penh));
+    weaponInfo.push(`${it.name} ×2: урон ${totalDmg}`);
     skip.add(partner);
   }else{
     const txt=`${it.name}: урон ${singleDmg}${d.v2?`(${d.v2+enh})`:''}`;
