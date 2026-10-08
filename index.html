@@ -431,7 +431,7 @@ if(!canUseMagic()){list=list.filter(k=>{if(!SKILLS[k])return true;
 if(state.purchasedSpells&&state.purchasedSpells.some(p=>p.school===k))return true;
 if(SKILLS[k].cat==='magic')return false;if(k==='qi')return false;return true;});}
 return list;}
-function getMagicPool(){return 2+Math.ceil((state.attrs.INT||1)/2);}
+function getMagicPool(){return 1+(state.attrs.INT||1);}
 function getSpellCost(){return state.class==='wizard'?1:2;}
 function getSpentOnSpells(){const cost=getSpellCost();const count=Object.keys(state.spells).filter(k=>state.spells[k]&&!k.startsWith('purchased_')&&!k.startsWith('free_')).length;return count*cost;}
 function getSpentOnBeast(){let t=0;if(state.beast&&BEASTS[state.beast])t+=BEASTS[state.beast].cost;
