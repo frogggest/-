@@ -948,7 +948,7 @@ if(state.class==='sorcerer'&&state.sorcererOrigin&&SORCERER_ORIGINS[state.sorcer
 document.getElementById('class-info').innerHTML=`<b>${c.name}:</b> ${c.info}${extra}`;}
 function parseDmg(v){if(typeof v==='number')return{v1:v,v2:null};const m=String(v).match(/^(\d+)\((\d+)\)$/);if(m)return{v1:parseInt(m[1]),v2:parseInt(m[2])};return{v1:0,v2:null};}
 function renderStats(){
-const hp=14+(state.attrs.TEL||1);const pool=getMagicPool();const spent=getTotalSpent();
+const hp=10+(state.attrs.TEL||1)*2;const pool=getMagicPool();const spent=getTotalSpent();
 const atkList=document.getElementById('attacks-list');const weaponLines=[];
 const strOk=(state.attrs.SIL||1)>=5;
 const isRM=(state.class==='rogue'||state.class==='magus');
