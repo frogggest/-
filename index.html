@@ -238,7 +238,7 @@ cleric:{name:'Жрец',fixed:[],info:'Навыки из домейнов бог
 monk:{name:'Монах',fixed:['staves','unarmed','blades','evocation','abjuration','conjuration','qi'],info:'Ци: Железная кожа, Очищение.'},
 paladin:{name:'Паладин',fixed:['blades','blunt','unarmed','bows','crossbows','conjuration','abjuration'],info:'Кары, Божественная защита.',hasGod:true},
 ranger:{name:'Следопыт',fixed:['bows','crossbows','blades','polearms','conjuration','transmutation','thrown'],info:'+2 против выбранного врага или в местности.',hasRangerChoice:true,hasBeast:true},
-sorcerer:{name:'Чародей',fixed:['blades','evocation','necromancy','transmutation','illusion','enchantment','abjuration','conjuration'],info:'Источник крови даёт +1 к школе.',hasSorcererOrigin:true},
+sorcerer:{name:'Чародей',fixed:['blades','evocation','necromancy','transmutation','illusion','enchantment','abjuration','conjuration'],info:'Источник крови даёт +2 к школе.',hasSorcererOrigin:true},
 rogue:{name:'Плут',fixed:['blades','thrown','illusion','transmutation','bows'],info:'Невидимость. +3 урона из невидимости.'},
 magus:{name:'Магос',fixed:['blades','blunt','axes','unarmed'],info:'Оружейные не выше магических больше чем на 1.',hasMagusSchools:true}
 };
@@ -310,8 +310,8 @@ const POTIONS=[
 {id:'elemental_bomb_acid',name:'Стихийная бомба (кислота)'},
 {id:'iron_skin',name:'Отвар железной кожи'},
 {id:'special_poison',name:'Специализированный яд'},
-{id:'blind_gas',name:'Ослепляющий газ',effect:},
-{id:'duplicate',name:'Дубликат',effect:}
+{id:'blind_gas',name:'Ослепляющий газ'},
+{id:'duplicate',name:'Дубликат'}
 ];
 const HEAL_POTION_LEVELS=[
   {price:10,heal:2},
@@ -342,13 +342,13 @@ air:{name:'Элементаль воздуха',cost:1,hp:'+5хп',special:'По
 storm:{name:'Грозовой элементаль',cost:1,hp:'+5хп',special:'+1 урона молнией'}
 };
 const SORCERER_ORIGINS={
-dragon:{name:'Драконье наследие',desc:'Ограждение +1. Защита от первых 2 заклинаний легче на 1.',restricted:[]},
-demon:{name:'Демоническое наследие',desc:'Воплощение +1. Можешь отрастить когти, наносящие 3 урона в ближнем бою.',restricted:['aasimar']},
-fey:{name:'Наследие фей',desc:'Очарование +1. Бесплатное заклинание Цветные брызги.',restricted:[]},
-death:{name:'Наследие смерти',desc:'Некромантия +1. Первая проверка на смерть автоматически успешна.',restricted:[]},
-angel:{name:'Наследие ангелов',desc:'Созидание +1. Бесплатное заклинание Лечение.',restricted:['tiefling']},
-hag:{name:'Наследие карги',desc:'Трансмутация +1. Снять один эффект контроля с себя, откат бой.',restricted:[]},
-aberration:{name:'Противоестественное наследие',desc:'Иллюзия +1. Тёмное зрение.',restricted:[]}
+dragon:{name:'Драконье наследие',desc:'Ограждение +2.'},
+demon:{name:'Демоническое наследие',desc:'Воплощение +2.',restricted:['aasimar']},
+fey:{name:'Наследие фей',desc:'Очарование +2.'},
+death:{name:'Наследие смерти',desc:'Некромантия +2.'},
+angel:{name:'Наследие ангелов',desc:'Созидание +2.',restricted:['tiefling']},
+hag:{name:'Наследие карги',desc:'Трансмутация +2.'},
+aberration:{name:'Противоестественное наследие',desc:'Иллюзия +2.'}
 };
 const SORCERER_FREE_SPELLS={
 fey:{school:'enchantment',text:'Цветные брызги'},
@@ -592,7 +592,7 @@ html+=`</div>`;}}
 if(cls.hasSorcererOrigin){
   const chosen=state.sorcererOrigin||'';
   html+=`<h4>Чародей — источник крови</h4>`;
-  html+=`<div class="hint">Наследие даёт +1 к одной школе и особую способность.</div>`;
+  html+=`<div class="hint">Наследие даёт +2 к одной школе и особую способность.</div>`;
   html+=`<div class="radio-group">`;
   for(const k in SORCERER_ORIGINS){
     const o=SORCERER_ORIGINS[k];
