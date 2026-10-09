@@ -210,6 +210,8 @@ abjuration:{name:'Ограждение',cat:'magic',attr:'MDR'},conjuration:{nam
 defense:{name:'Защита',cat:'util',attr:null},persuasion:{name:'Убеждение',cat:'util',attr:'HAR'},
 survival:{name:'Выживание',cat:'util',attr:'MDR'},perception:{name:'Внимательность',cat:'util',attr:'MDR'},
 lore:{name:'Начитанность',cat:'util',attr:'INT'},stealth:{name:'Скрытность',cat:'util',attr:'LVK'},
+sleight:{name:'Сноровка',cat:'util',attr:'LVK'},
+improvisation:{name:'Импровизация',cat:'util',attr:'SIL'},
 qi:{name:'Ци',cat:'special',attr:'MDR'}
 };
 function getAttrValue(a){if(!a)return 0;if(Array.isArray(a))return Math.max(...a.map(x=>state.attrs[x]||1));return state.attrs[a]||1;}
