@@ -325,6 +325,10 @@ const FOOD_LEVELS=[
   {price:5,heal:1},
   {price:10,heal:2}
 ];
+const MANA_ELIXIR_LEVELS=[
+  {price:25,reduce:1},
+  {price:35,reduce:2}
+];
 const BEASTS={
 boar:{name:'Кабан',cost:1,hp:'11хп, 4 урона, 1 броня',skill:'Безоружный 5, Защита 5',special:'Рывок к врагу'},
 bear:{name:'Медведь',cost:3,hp:'16хп, 4 урона, 2 броня',skill:'Безоружный 5, Защита 9',special:'—'},
@@ -412,14 +416,15 @@ gear:{name:'Снаряжение и расходники',items:[
 {id:'food_base',name:'Еда',price:5,note:'восстанавливает 1хп'},{id:'resurrect',name:'Свиток воскрешения',price:250,note:'Возврат к жизни'},
 {id:'rope',name:'Веревка',price:7,note:'Подъёмы'},{id:'lockpick',name:'Отмычка',price:10,note:'Взлом'},
 {id:'alchemy',name:'Алхимический набор (1 элемент)',price:20,note:'Только алхимику',only:['alchemist']},
-{id:'buffscroll',name:'Свиток усиления',price:30,note:'+1 к заклинанию, +20 за следующий уровень'}]}
+{id:'buffscroll',name:'Свиток усиления',price:30,note:'+1 к заклинанию, +20 за следующий уровень'},
+{id:'mana_elixir_base',name:'Зелье маны',price:25}]}
 };
 let state={name:'',gender:'',race:'human',subrace:'',class:'fighter',god:'',priority:'A',
 attrs:{SIL:1,TEL:1,LVK:1,INT:1,MDR:1,HAR:1},skills:{},spells:{},cart:[],gear:'',
 magusSchools:[],domainChoices:{},rangerChoice:'',rangerType:'',beast:'',
 druidOrder:'',wildForm:'',elementalForm:'',sorcererOrigin:'',potions:{},alchemyFire:0,
 xpEarned:0,xpSpent:0,sessionLog:[],purchasedSpells:[],xpOpen:false,
-spellEnhance:{},healPotionLevel:0,foodLevel:0,shopOpen:{}};
+spellEnhance:{},healPotionLevel:0,foodLevel:0,manaElixirLevel:0,shopOpen:{}};
 function xpAvail(){return state.xpEarned-state.xpSpent;}
 function canUseMagic(){if(state.class==='cleric'||state.class==='paladin')return true;return state.priority==='B';}
 function initSelects(){
@@ -775,25 +780,28 @@ let html=`<details class="shop-cat" ${isOpen?'open':''} ontoggle="toggleShopCat(
 cat.items.forEach(it=>{
   const blocked=isBlocked(it,catKey);
   const isHealBase=it.id==='healpotion_base';
-const isFoodBase=it.id==='food_base';
-const isLeveled=isHealBase||isFoodBase;
-const lvl=isHealBase?(state.healPotionLevel||0):(state.foodLevel||0);
-const cur=isHealBase?HEAL_POTION_LEVELS[lvl]:FOOD_LEVELS[lvl];
+  const isFoodBase=it.id==='food_base';
+  const isManaBase=it.id==='mana_elixir_base';
+  const isLeveled=isHealBase||isFoodBase||isManaBase;
+  const lvl=isHealBase?(state.healPotionLevel||0):isFoodBase?(state.foodLevel||0):(state.manaElixirLevel||0);
+  const cur=isHealBase?HEAL_POTION_LEVELS[lvl]:isFoodBase?FOOD_LEVELS[lvl]:MANA_ELIXIR_LEVELS[lvl];
   const noteHtml=(!isWeapon&&it.note)?` <span class="restricted">(${it.note})</span>`:'';
   const dmgs=it.dmg!==undefined?(it.dmg2!==undefined?`${it.dmg}(${it.dmg2})`:it.dmg):null;
   const prices=isHealBase?cur.price:(it.price2!==undefined?`${it.price}(${it.price2})`:it.price);
   const tags=[];if(it.two)tags.push(it.noStr?'двуручное (без СИЛ)':'двуручное');if(it.canTwo)tags.push('может быть двуручным');
   const tagStr=tags.length?` <span class="restricted">(${tags.join(', ')})</span>`:'';
   if(isLeveled){
-  const label=isHealBase?`лечит ${cur.heal}хп`:`восстанавливает ${cur.heal}хп`;
-  html+=`<div class="shop-item"><span>${it.name} — ${label}</span><span class="price">${cur.price}м</span><span>`;
-  html+=`<button class="small" onclick="changeLeveled(-1,'${isHealBase?'heal':'food'}')" ${lvl<=0?'disabled':''}>−</button> `;
-  html+=`<button class="small" onclick="changeLeveled(1,'${isHealBase?'heal':'food'}')" ${lvl>=(isHealBase?HEAL_POTION_LEVELS:FOOD_LEVELS).length-1?'disabled':''}>+</button> `;
-  html+=`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`;
-  html+=`</span></div>`;
-}else{
-  html+=`<div class="shop-item"><span>${it.name}${dmgs!==null?` — урон ${dmgs}`:''}${it.def!==undefined?` — защита ${it.def}`:''}${tagStr}${noteHtml}</span><span class="price">${prices}м</span><span>${blocked?'<span class="restricted">недоступно</span>':`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`}</span></div>`;
-}
+    const label=isHealBase?`лечит ${cur.heal}хп`:isFoodBase?`восстанавливает ${cur.heal}хп`:`−${cur.reduce}`;
+    const ltype=isHealBase?'heal':isFoodBase?'food':'mana';
+    const larr=isHealBase?HEAL_POTION_LEVELS:isFoodBase?FOOD_LEVELS:MANA_ELIXIR_LEVELS;
+    html+=`<div class="shop-item"><span>${it.name} — ${label}</span><span class="price">${cur.price}м</span><span>`;
+    html+=`<button class="small" onclick="changeLeveled(-1,'${ltype}')" ${lvl<=0?'disabled':''}>−</button> `;
+    html+=`<button class="small" onclick="changeLeveled(1,'${ltype}')" ${lvl>=larr.length-1?'disabled':''}>+</button> `;
+    html+=`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`;
+    html+=`</span></div>`;
+  }else{
+    html+=`<div class="shop-item"><span>${it.name}${dmgs!==null?` — урон ${dmgs}`:''}${it.def!==undefined?` — защита ${it.def}`:''}${tagStr}${noteHtml}</span><span class="price">${prices}м</span><span>${blocked?'<span class="restricted">недоступно</span>':`<button class="small" onclick="buyItem('${catKey}','${it.id}')">Купить</button>`}</span></div>`;
+  }
 })
 html+=`</details>`;shop.innerHTML+=html;}}
 function isBlocked(item,catKey){
@@ -801,13 +809,14 @@ const isRangedTwo=item.two&&(catKey==='ranged');
 const isRogueAllowed=state.class==='rogue'&&isRangedTwo;
 if(item.two&&!isRogueAllowed&&(state.class==='rogue'||state.class==='magus'))return true;
 if(item.only&&!item.only.includes(state.class))return true;
+if(item.id==='mana_elixir_base'&&!canUseMagic())return true;
 if(item.restricted&&item.restricted.includes(state.class))return true;
 if(state.class==='cleric'&&(catKey==='melee'||catKey==='ranged')){
 if(!state.god)return true;const allowed=GOD_WEAPONS_MAP[state.god]||[];
 if(!allowed.includes(item.id))return true;}return false;}
 function changeLeveled(delta,type){
-  const key=type==='heal'?'healPotionLevel':'foodLevel';
-  const arr=type==='heal'?HEAL_POTION_LEVELS:FOOD_LEVELS;
+  const key=type==='heal'?'healPotionLevel':type==='food'?'foodLevel':'manaElixirLevel';
+  const arr=type==='heal'?HEAL_POTION_LEVELS:type==='food'?FOOD_LEVELS:MANA_ELIXIR_LEVELS;
   const cur=state[key]||0;
   const next=cur+delta;
   if(next<0||next>=arr.length)return;
@@ -820,16 +829,20 @@ function toggleShopCat(catKey,isOpen){
   else delete state.shopOpen[catKey];
 }
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
-if(id==='healpotion_base'||id==='food_base'){
+if(id==='healpotion_base'||id==='food_base'||id==='mana_elixir_base'){
   const isHeal=id==='healpotion_base';
-  const key=isHeal?'healPotionLevel':'foodLevel';
-  const arr=isHeal?HEAL_POTION_LEVELS:FOOD_LEVELS;
+  const isFood=id==='food_base';
+  const key=isHeal?'healPotionLevel':isFood?'foodLevel':'manaElixirLevel';
+  const arr=isHeal?HEAL_POTION_LEVELS:isFood?FOOD_LEVELS:MANA_ELIXIR_LEVELS;
   const lvl=state[key]||0;
   const cur=arr[lvl];
   const pool=PRIORITIES[state.priority].money;
   if(totalSpentMoney()+cur.price>pool){alert('Не хватает золота.');return;}
-  const name=isHeal?`Зелье лечения (${cur.heal}хп)`:`Еда (${cur.heal}хп)`;
-  state.cart.push({cat,id,name,price:cur.price,sharp:0,reinf:0,healLevel:lvl});
+  let name;
+  if(isHeal)name=`Зелье лечения (${cur.heal}хп)`;
+  else if(isFood)name=`Еда (${cur.heal}хп)`;
+  else name=`Зелье маны (−${cur.reduce})`;
+  state.cart.push({cat,id,name,price:cur.price,sharp:0,reinf:0,healLevel:lvl,manaReduce:(isHeal||isFood)?0:cur.reduce});
   render();save();return;
 }
 if(cat==='shields'){
@@ -905,7 +918,8 @@ state.cart.forEach((c,i)=>{
   let extra='';
   if(isWeaponItem(c.cat)&&c.sharp>0)extra+=` <span class="upg-tag">+${c.sharp} заточка</span>`;
   if(isArmorItem(c.cat)&&c.reinf>0)extra+=` <span class="upg-tag">+${c.reinf} укрепление</span>`;
-  let upgRow='';
+if(c.manaReduce)extra+=` <span class="upg-tag">−${c.manaReduce}</span>`;
+let upgRow='';
 const item=findItem(c.cat,c.id);
 if(item&&item.canTwo){
   const isRM=(state.class==='rogue'||state.class==='magus');
@@ -1110,6 +1124,7 @@ function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет
 if(!state.spellEnhance)state.spellEnhance={};
 if(state.healPotionLevel===undefined)state.healPotionLevel=0;
 if(state.foodLevel===undefined)state.foodLevel=0;
+if(state.manaElixirLevel===undefined)state.manaElixirLevel=0;
 if(!state.shopOpen)state.shopOpen={};
 if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;if(c.twoHanded===undefined)c.twoHanded=false;});}
 applyState();render();}
@@ -1119,6 +1134,7 @@ function importJSON(){const inp=document.createElement('input');inp.type='file';
 if(!state.spellEnhance)state.spellEnhance={};
 if(state.healPotionLevel===undefined)state.healPotionLevel=0;
 if(state.foodLevel===undefined)state.foodLevel=0;
+if(state.manaElixirLevel===undefined)state.manaElixirLevel=0;
 if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;if(c.twoHanded===undefined)c.twoHanded=false;});}
 applyState();render();}catch{alert('Ошибка чтения.');}};r.readAsText(f);};inp.click();}
 initSelects();
