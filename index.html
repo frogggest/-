@@ -419,7 +419,7 @@ attrs:{SIL:1,TEL:1,LVK:1,INT:1,MDR:1,HAR:1},skills:{},spells:{},cart:[],gear:'',
 magusSchools:[],domainChoices:{},rangerChoice:'',rangerType:'',beast:'',
 druidOrder:'',wildForm:'',elementalForm:'',sorcererOrigin:'',potions:{},alchemyFire:0,
 xpEarned:0,xpSpent:0,sessionLog:[],purchasedSpells:[],xpOpen:false,
-spellEnhance:{},healPotionLevel:0,foodLevel:0};
+spellEnhance:{},healPotionLevel:0,foodLevel:0,shopOpen:{}};
 function xpAvail(){return state.xpEarned-state.xpSpent;}
 function canUseMagic(){if(state.class==='cleric'||state.class==='paladin')return true;return state.priority==='B';}
 function initSelects(){
@@ -770,7 +770,8 @@ if(diff>0&&!canAfford(diff)){alert('Не хватает очков.');return;}st
 function renderShop(){
 const shop=document.getElementById('shop');shop.innerHTML='';
 for(const catKey in EQUIPMENT){const cat=EQUIPMENT[catKey];const isWeapon=isWeaponItem(catKey);
-let html=`<details class="shop-cat"><summary>${cat.name}</summary>`;
+const isOpen=state.shopOpen&&state.shopOpen[catKey];
+let html=`<details class="shop-cat" ${isOpen?'open':''} ontoggle="toggleShopCat('${catKey}',this.open)"><summary>${cat.name}</summary>`;
 cat.items.forEach(it=>{
   const blocked=isBlocked(it,catKey);
   const isHealBase=it.id==='healpotion_base';
@@ -812,6 +813,11 @@ function changeLeveled(delta,type){
   if(next<0||next>=arr.length)return;
   state[key]=next;
   renderShop();
+}
+function toggleShopCat(catKey,isOpen){
+  if(!state.shopOpen)state.shopOpen={};
+  if(isOpen)state.shopOpen[catKey]=true;
+  else delete state.shopOpen[catKey];
 }
 function buyItem(cat,id){const item=findItem(cat,id);if(!item)return;if(isBlocked(item,cat))return;
 if(id==='healpotion_base'||id==='food_base'){
@@ -1104,6 +1110,7 @@ function load(){const raw=localStorage.getItem('pf_char');if(!raw){alert('Нет
 if(!state.spellEnhance)state.spellEnhance={};
 if(state.healPotionLevel===undefined)state.healPotionLevel=0;
 if(state.foodLevel===undefined)state.foodLevel=0;
+if(!state.shopOpen)state.shopOpen={};
 if(state.cart){state.cart.forEach(c=>{if(c.sharp===undefined)c.sharp=0;if(c.reinf===undefined)c.reinf=0;if(c.twoHanded===undefined)c.twoHanded=false;});}
 applyState();render();}
 function reset(){if(!confirm('Сбросить?'))return;localStorage.removeItem('pf_char');location.reload();}
